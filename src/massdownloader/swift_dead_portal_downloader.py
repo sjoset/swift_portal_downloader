@@ -1,14 +1,3 @@
-#hey
-
-import pathlib
-import requests
-import subprocess
-import os
-
-from bs4 import BeautifulSoup
-from typing import List, Tuple
-
-    
 def get_swift_wget_commands(tid: str, dtype: str, overwrite: bool) -> List[str]:
 
     # for any given target id, there may be multiple observations in their own directories,
@@ -147,104 +136,14 @@ def swift_download_compressed_tar(tid: str, tname: str, dtype: str, out_file_ste
     
     print(f"Wrote {str(out_file)}.")
 
-    return
-
-def search_page(search_term: str) -> Tuple[]:
-    # construct the search url
-    base_search_url = 'https://www.swift.ac.uk/dead_portal/getobject.php'
-    search_url = base_search_url + '?name=' + search_term + '&submit=Search+Names'
+    return:
     
-    # download the search page and parse it
-    page_html = requests.get(search_url)
-    search_soup = BeautifulSoup(page_html.text, features="lxml")
-    return page_html, search_soup
-    
-def results_type(search_soup: str) -> str:
-    # reads the html to see if the page showed that there is no results by displaying the string 
-    # find() will return -1 if that exact string is not found     
-    if(search_soup.get_text().find('No entry found in the database with object name matching') != -1):
-        return '0'
-    elif(search_soup.get_text().find('Download archive data') != -1):
-        return '1'
-    else:
-        return '2+'
-    
-def get_single_tlist(search_term: str, search_soup) -> [str, str]:
-    global SearchClass
-    string = ''
-    
-    # searches the saved soup html of the page for the tid and tname
-    page_head = str(search_soup.find_all('h1')[0])
-    tname = page_head[30:-5]
-    page_label = str(search_soup.find_all('label')[1])
-    tid = page_label[29:37]
-    
-    # displays the results to the user
-    print(f'\nFound a single data file for the search term \'{search_term}\':\n')
-    print(f'Name of observation: {tname}'.ljust(67) + 'Total number of observations: 1\n')
-    # returns the tname and tid as a list
-    return [tname, tid]
-
-def get_multi_tlists(search_term: str, search_soup: str) -> List[Tuple[str, str]]:    
-    # get the main results table
-    results_table = search_soup.find("table", {"class": "chTable"})
-    
-    # ignore the first row with the names of the columns, and the last row with links for all of the data
-    table_rows = results_table.find_all("tr")[1:-1]
-    
-    # .contents is a list, our table has only one element in it, so take contents[0]
-    tids = [row.find("td", {"headers": "row_targ"}).contents[0] for row in table_rows]
-    tnames = [row.find("td", {"headers": "row_name"}).contents[0] for row in table_rows]
-    tobservations = [row.find("td", {"headers": "row_num"}).contents[0] for row in table_rows]
-    
-    # create a dict to show the user the total ammount of data for each observation in tname
-    # iterates through tnames and tobservations to count the total times for each tname, storing these values in print_table
-    print_table = {}
-    i = 0
-    while i < len(table_rows):
-        print_table[f'{tnames[i]}'] = print_table.get(f'{tnames[i]}', 0) + int(tobservations[i])
-        i += 1
-    print(f'\nFound the following data for the search term \'{search_term}\':\n')
-    
-    # prints the table of files found for the user to see what their search results are
-    # cast elements in the print_table to be able to index the tname and toal tobservations separately
-    j = 0
-    while j < len(print_table):
-        print(f'Name of observation: {tuple(print_table.items())[j][0]}'.ljust(67) + f'Total number of observations: {tuple(print_table.items())[j][1]}\n')
-        j += 1
-
-    # zips and returns the tids and tnames as a list of type Tuple
-    all_targets_zip = zip(tids, tnames)
-    return list(all_targets_zip)
-
-def download_single_file(tlist: str, dtype_list: str, dest_dir: pathlib.Path, download_type: str, overwrite=False) -> None:
-    # downloads the file for a single result when searching
-    for dtype in dtype_list:
-        if download_type == 'uncompressed':
-            swift_download_uncompressed(tid=tlist[1], dtype=dtype, dest_dir=dest_dir, overwrite=overwrite)
-        if download_type in ['tar', 'zip']:
-            swift_download_compressed(tid=tlist[1], tname=tlist[0], dtype=dtype, archive_type=download_type, dest_dir=dest_dir, overwrite=overwrite)
-    
-def download_multi_files(tlist: str, dtype_list: str, dest_dir: pathlib.Path, download_type: str, overwrite=False) -> None:
+def download_files(tlist: str, dtype_list: str, dest_dir: pathlib.Path, download_type: str -> None:
     # downloads the files for 2+ results when searching
     # iterates over each requested data type and observation collected from get_multi_tlists()
     for dtype in dtype_list:
         for tid, tname in tlist:
             if download_type == 'uncompressed':
-                swift_download_uncompressed(tid=tid, dtype=dtype, dest_dir=dest_dir, overwrite=overwrite)
+                    swift_download_uncompressed(tid=tid, dtype=dtype, dest_dir=dest_dir)
             if download_type in ['tar', 'zip']:
-                swift_download_compressed(tid=tid, tname=tname, dtype=dtype, archive_type=download_type, dest_dir=dest_dir, overwrite=overwrite)
-
-search_term = input("Search Term: ")
-page_html, search_soup = search_page(search_term=search_term)
-num_of_results = results_type(search_soup=search_soup)
-if(num_of_results == '0'):
-    print("ERROR, 0 results")
-    sys.exit()
-elif(num_of_results == '1'):
-    print("1 RESULT")
-    get_single_tlist(search_term=search_term, search_soup=search_soup)
-else:
-    print("2 RESULTS")
-    get_multi_tlists(search_term=search_term, search_soup=search_soup)
-#print(search_term)
+                   swift_download_compressed(tid=tid, tname=tname, dtype=dtype, archive_type=download_type, dest_dir=dest_dir)
