@@ -1,0 +1,3 @@
+#download_path: /Users/jduffy0121/
+overwrite: False
+download_type: uncompressed #[uncompressed, tar, zip]
