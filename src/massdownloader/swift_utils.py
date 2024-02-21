@@ -12,9 +12,6 @@ def prepare_download_dir(t_list: str, download_path: str):
             os.mkdir(f'{download_path}/{dir_name}')
     return
 
-def merge_download_files(t_name: str, t_id: str, download_path: str):
-    return
-
 def remove_incomplete_downloads(download_path: str, working_path: str):
     os.chdir(download_path)
     dirs = [dir for dir in os.listdir() if os.path.isdir(dir)] 
