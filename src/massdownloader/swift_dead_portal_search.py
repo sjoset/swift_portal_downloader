@@ -28,8 +28,6 @@ def results_type(search_soup: str) -> str:
         return '2+'
     
 def get_single_tlist(search_term: str, search_soup) -> [str, str]:
-    global SearchClass
-    string = ''
     
     # searches the saved soup html of the page for the tid and tname
     page_head = str(search_soup.find_all('h1')[0])

@@ -8,10 +8,17 @@ import yaml
 
 def main():
     working_path = os.getcwd()
+    if (os.path.isfile(f'{working_path}/config.yaml') == False):
+        print("Unable to find config.yaml file in current directory")
+        return
     with open(f'{working_path}/config.yaml', 'r') as file:
-        config = yaml.safe_load(file)  
-        download_path = config['download_path']
-        dtype_list = config['dtype_list']
+        config = yaml.safe_load(file)
+        try:
+            download_path = config['download_path']
+            dtype_list = config['dtype_list']
+        except (KeyError, TypeError):
+            print("Unable to read config.yaml")
+            return
     file.close()  
     if (os.path.isdir(f"{download_path}") == False):
             print("Unable to reconize download path in config.yaml")
@@ -21,9 +28,8 @@ def main():
         user_input = input()
         if (user_input == 'q'):
             return      
-        elif (user_input == '0'):
-            print("Select mass d")
-            search_terms = {"Comet", "P/", "C/"} #{"C/", "Comet", "P/"}
+        elif (user_input == '0'): 
+            search_terms = {"Comet", "P/", "C/"} 
             results = []
             for term in search_terms:
                 page_html, search_soup = search_page(search_term = term)
