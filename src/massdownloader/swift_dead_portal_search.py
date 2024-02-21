@@ -36,10 +36,7 @@ def get_single_tlist(search_term: str, search_soup) -> [str, str]:
     tname = page_head[30:-5]
     page_label = str(search_soup.find_all('label')[1])
     tid = page_label[29:37]
-    
-    # displays the results to the user
-    print(f'\nFound a single data file for the search term \'{search_term}\':\n')
-    print(f'Name of observation: {tname}'.ljust(67) + 'Total number of observations: 1\n')
+      
     # returns the tname and tid as a list
     return [tname, tid]
 
@@ -54,7 +51,28 @@ def get_multi_tlists(search_term: str, search_soup: str) -> List[Tuple[str, str]
     tids = [row.find("td", {"headers": "row_targ"}).contents[0] for row in table_rows]
     tnames = [row.find("td", {"headers": "row_name"}).contents[0] for row in table_rows]
     tobservations = [row.find("td", {"headers": "row_num"}).contents[0] for row in table_rows]
-            
+      
     # zips and returns the tids and tnames as a list of type Tuple
     all_targets_zip = zip(tids, tnames)
     return list(all_targets_zip)
+
+def convert_tid_to_obsid(t_id: str):
+    # for any given target id, there may be multiple observations in their own directories,
+    # with the naming scheme {target id}001/, {target id}002/, etc.
+    # so we let the server give us the appropriate wget commands because it knows how
+    # many observations each target id has
+    
+    overwrite_option = '-nc'
+    base_wget_url = f'https://www.swift.ac.uk/archive/download.sh?reproc=1&tid={t_id}&source=obs&subdir=auxil'
+    wget_response = requests.get(base_wget_url)
+    wget_commands = [line for line in wget_response.text.splitlines() if 'wget' in line]
+    urls = [command.split()[-1] for command in wget_commands]
+    
+    # iterates through each wget url created for all obsids
+    obsids = []
+    i = 0
+    while i < len(urls):
+        link = urls[i]
+        obsids.append(link[38:-7])
+        i += 1
+    return obsids

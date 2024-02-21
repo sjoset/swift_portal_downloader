@@ -1,2 +1,2 @@
 download_path: '/Users/jduffy0121/Desktop/comet_download'
-download_type: uncompressed #[uncompressed, tar, zip]
+dtype_list: ['auxil', 'bat', 'xrt', 'uvot', 'log']
