@@ -23,11 +23,3 @@ def remove_incomplete_downloads(download_path: str, working_path: str):
             shutil.rmtree(f"{download_path}/{dir}")
     os.chdir(working_path)
     return
-
-def main():
-    i=search_download_dir('/Users/jduffy0121/Desktop/comet_download')
-    remove_incomplete_downloads('/Users/jduffy0121/Desktop/comet_download')
-
-    
-if __name__ == "__main__":
-    sys.exit(main())
