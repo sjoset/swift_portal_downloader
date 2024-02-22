@@ -1,11 +1,9 @@
 import pathlib
 from rich.progress import track
-import requests
 import subprocess
 import os
 import shutil
 from typing import List, Tuple
-import tqdm
 
 def get_swift_wget_commands(obsid: str, dtype: str, overwrite: bool) -> List[str]:
 

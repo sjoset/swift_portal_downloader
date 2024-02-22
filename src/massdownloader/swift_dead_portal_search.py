@@ -1,7 +1,4 @@
-import pathlib
 import requests
-import subprocess
-import os
 
 from bs4 import BeautifulSoup
 from typing import List, Tuple

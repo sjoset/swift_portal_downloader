@@ -1,7 +1,5 @@
 import os
-import sys
 import shutil
-import yaml
 
 def prepare_download_dir(t_list: str, download_path: str):
     t_names = [t_name for (t_id, t_name) in t_list]
