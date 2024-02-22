@@ -3,6 +3,7 @@ import re
 import pathlib
 import numpy as np
 import yaml
+from rich.console import Console
 
 from typing import List, Optional
 
@@ -42,25 +43,26 @@ def match_short_period_name(comet_name: str) -> Optional[str]:
 
     return short_period_name
 
-def manual_fix(comet_name: str) -> str:
-    with open('comet_names.yaml', 'r') as file:
+def manual_fix(comet_name: str, name_schemes_path: str) -> str:
+    with open(f'{name_schemes_path}', 'r') as file:
         name_scheme = yaml.safe_load(file)
     file.close()
     if comet_name in name_scheme:
         proper_name = name_scheme[f'{comet_name}']
-    else: 
-        proper_name = add_new_name(comet_name, name_scheme)  
+    else:
+        return add_new_name(comet_name, name_scheme)
     return proper_name
 
 def add_new_name(comet_name: str, name_scheme: dict) -> str:
-    print(f"Unable to classify '{comet_name}' observation name from the swift portal.")
-    proper_name = input("Enter the correct conventional name for this observation: ")
+    console = Console()
+    console.print(f"Unable to classify [magenta]'{comet_name}'[/] observation name from the swift portal.", style='cyan')
+    proper_name = input("Enter the correct conventional name for this observation: \n")
     name_scheme[f'{comet_name}'] = proper_name
     with open('comet_names.yaml', 'w') as file:
         yaml_output=yaml.dump(name_scheme, file)
     return proper_name
 
-def rename_comet_name(comet_name: str) -> str: 
+def rename_comet_name(comet_name: str, name_schemes_path: str) -> str: 
     long_name=match_long_period_name(comet_name)
     if (long_name != None):
         return long_name.replace('/', '_')    
@@ -68,5 +70,5 @@ def rename_comet_name(comet_name: str) -> str:
     if (short_name != None):
         return short_name.replace('/', '_')
     else:
-        name = manual_fix(comet_name)
+        name = manual_fix(comet_name, name_schemes_path)
         return name.replace('/', '_')
