@@ -1,9 +1,9 @@
 import os
 import shutil
 
-def prepare_download_dir(t_list: str, download_path: str):
-    t_names = [t_name for (t_id, t_name) in t_list]
-    for dir_name in t_names:
+def prepare_download_dir(tlist: str, download_path: str):
+    tnames = [tname for (tid, tname) in tlist]
+    for dir_name in tnames:
         if os.path.exists(f'{download_path}/{dir_name}'):
             pass
         else:
