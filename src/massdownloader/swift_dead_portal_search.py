@@ -50,14 +50,14 @@ def get_multi_tlists(search_term: str, search_soup: str) -> List[Tuple[str, str]
     all_targets_zip = zip(tids, tnames)
     return list(all_targets_zip)
 
-def convert_tid_to_obsid(t_id: str):
+def convert_tid_to_obsid(tid: str):
     # for any given target id, there may be multiple observations in their own directories,
     # with the naming scheme {target id}001/, {target id}002/, etc.
     # so we let the server give us the appropriate wget commands because it knows how
     # many observations each target id has
     
     overwrite_option = '-nc'
-    base_wget_url = f'https://www.swift.ac.uk/archive/download.sh?reproc=1&tid={t_id}&source=obs&subdir=auxil'
+    base_wget_url = f'https://www.swift.ac.uk/archive/download.sh?reproc=1&tid={tid}&source=obs&subdir=auxil'
     wget_response = requests.get(base_wget_url)
     wget_commands = [line for line in wget_response.text.splitlines() if 'wget' in line]
     urls = [command.split()[-1] for command in wget_commands]

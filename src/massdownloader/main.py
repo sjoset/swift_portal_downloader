@@ -27,19 +27,19 @@ def main():
                 console.print("Unable to find [magenta][bold]comet_names.yaml[/][/] file.", style="red")
                 return
         except (KeyError, TypeError):
-            console.print("Unable to read [magenta][bold]config.yaml[/][/] file.", style="red")
+            console.print("Unable to read [magenta][bold]config.yaml[/][/] file in current directory.", style="red")
             return
     file.close()  
     if (os.path.isdir(f"{download_path}") == False):
-            console.print("Unable to reconize download path in [magenta][bold]config.yaml[/][/] file.", style="red")
-            return
+        console.print("Unable to reconize download path in [magenta][bold]config.yaml[/][/] file.", style="red")
+        return
     while (True):
-        console.print(f"\n[underline][green]Select option[/][/]\n\t[cyan]0[/]\tGenerate observation list\n\t[cyan]1[/]\tDownload results\n\t[cyan]q[/]\tQuit")
+        console.print(f"\n[underline][green]Select option[/][/]\n\t[cyan]0[/]\tSearch and generate observation list\n\t[cyan]1[/]\tDownload results\n\t[cyan]q[/]\tQuit")
         user_input_1 = input()
         if (user_input_1 == 'q'):
             return  
         if (user_input_1 == '0'):
-            console.print(f"\n[underline][green]Select option[/][/]\n\t[cyan]0[/]\tGrab all comet data\n\t[cyan]1[/]\tSearch portal for specific query\n\t[cyan]q[/]\tQuit")
+            console.print(f"\n[underline][green]Select option[/][/]\n\t[cyan]0[/]\tGrab all comet results\n\t[cyan]1[/]\tSearch portal for specific query\n\t[cyan]q[/]\tReturn to previous menu")
             while(True):
                 user_input_2 = input()
                 if (user_input_2 == 'q'):
@@ -50,13 +50,13 @@ def main():
                     print()
                     for term in track(search_terms, description="[cyan]Searching portal...[/]"):
                         page_html, search_soup = search_page(search_term = term)
-                        t_list = get_multi_tlists(search_term = term, search_soup = search_soup)
-                        results.append(t_list)
+                        tlist = get_multi_tlists(search_term = term, search_soup = search_soup)
+                        results.append(tlist)
                     full_results = results[0] + results[1] + results[2]
                     condensed_list = set(full_results)
                     console.print('Converting target names[cyan]...[/]', style="cyan")
-                    new_name_list = [(t_id, rename_comet_name(t_name, comet_names_path)) for (t_id, t_name) in condensed_list]
-                    converted_list = [(convert_tid_to_obsid(t_id), convectional_name) for (t_id, convectional_name) in track(new_name_list, description="[cyan]Generating observation ids...[/]")] 
+                    new_name_list = [(tid, rename_comet_name(tname, comet_names_path)) for (tid, tname) in condensed_list]
+                    converted_list = [(convert_tid_to_obsid(tid), convectional_name) for (tid, convectional_name) in track(new_name_list, description="[cyan]Generating observation ids...[/]")] 
                 elif (user_input_2 == '1'):
                     search_term = input(f"\nSearch term (press q to return to previous menu): ")
                     if (search_term == 'q'):
@@ -65,15 +65,15 @@ def main():
                     num_of_results = results_type(search_soup = search_soup) 
                     if (num_of_results == '0'):
                         console.print(f"No results found for [magenta]{search_term}[/].", style="cyan")
-                        continue
+                        break
                     elif (num_of_results == '1'):
-                        t_list = get_single_tlist(search_term = search_term, search_soup = search_soup)
-                        converted_list=[(convert_tid_to_obsid(t_list[1]), rename_comet_name(t_list[0], comet_names_path))] 
+                        tlist = get_single_tlist(search_term = search_term, search_soup = search_soup)
+                        converted_list=[(convert_tid_to_obsid(tlist[1]), rename_comet_name(tlist[0], comet_names_path))] 
                     else:
-                        t_list = get_multi_tlists(search_term = search_term, search_soup = search_soup) 
+                        tlist = get_multi_tlists(search_term = search_term, search_soup = search_soup) 
                         console.print('Converting target names[cyan]...[/]', style="cyan")
-                        new_name_list = [(t_id, rename_comet_name(t_name, comet_names_path)) for (t_id, t_name) in t_list]
-                        converted_list = [(convert_tid_to_obsid(t_id), convectional_name) for (t_id, convectional_name) in track(new_name_list, description="[cyan]Generating observation ids...[/]")] 
+                        new_name_list = [(tid, rename_comet_name(tname, comet_names_path)) for (tid, tname) in tlist]
+                        converted_list = [(convert_tid_to_obsid(tid), convectional_name) for (tid, convectional_name) in track(new_name_list, description="[cyan]Generating observation ids...[/]")] 
                 console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to current directory.') 
                 df = pd.DataFrame(converted_list) 
                 df.columns = ['Observation id(s)', 'Convectional name']
@@ -82,7 +82,7 @@ def main():
 
         if (user_input_1 == '1'):
             if (os.path.isfile(f'{working_path}/portal_search_results.csv') == False):
-                console.print("\n[red]Unable to find [/][magenta][bold]portal_search_results.csv[/][/][red] file in current directory.\nGenerate it using [/][magenta][bold]Generate observation list[/][/][red] option.")
+                console.print("\n[red]Unable to find [/][magenta][bold]portal_search_results.csv[/][/][red] file in current directory.\nGenerate it using [/][magenta][bold]Search and generate observation list[/][/][red] option.")
                 continue
             df=pd.read_csv(f'{working_path}/portal_search_results.csv')
             df_list=df.values.tolist()
@@ -95,7 +95,7 @@ def main():
                     console.print(f"\nRemoving incomplete downloads[cyan]...[/]", style="cyan")
                     remove_incomplete_downloads(download_path=download_path, working_path=working_path)
                     console.print("Preparing download directory[cyan]...[/]", style="cyan")
-                    prepare_download_dir(converted_list, download_path)
+                    prepare_download_dir(tlist, download_path)
                     console.print("Beginning download[cyan]...[/]\n", style="cyan")
                     download_files(tlist=tlist, dtype_list=dtype_list, dest_dir=download_path)
                     console.print(f'\nDownload finished', style="cyan")
