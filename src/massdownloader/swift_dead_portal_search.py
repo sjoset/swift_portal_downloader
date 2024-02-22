@@ -1,8 +1,7 @@
-import requests
-
 from bs4 import BeautifulSoup
 from typing import List, Tuple
 
+import requests
 
 def search_page(search_term: str):
     # construct the search url

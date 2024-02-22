@@ -2,10 +2,11 @@ from .swift_dead_portal_search import search_page, get_multi_tlists, get_single_
 from .swift_dead_portal_downloader import download_files
 from .swift_utils import prepare_download_dir, remove_incomplete_downloads
 from .swift_comet_rename import rename_comet_name
-from bs4 import BeautifulSoup
-import os
+
 from rich.console import Console
 from rich.progress import track
+
+import os
 import yaml
 import pandas as pd
 import ast

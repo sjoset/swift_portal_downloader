@@ -1,8 +1,8 @@
+from rich.console import Console
+from typing import List, Optional
+
 import re
 import yaml
-from rich.console import Console
-
-from typing import List, Optional
 
 def match_long_period_name(comet_name: str) -> Optional[str]:
     """Searches comet_name for anything resembling a long-period comet naming convention"""
