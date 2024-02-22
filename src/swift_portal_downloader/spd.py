@@ -5,11 +5,13 @@ from .swift_comet_rename import rename_comet_name
 
 from rich.console import Console
 from rich.progress import track
+from rich.markdown import Markdown
 
 import os
 import yaml
 import pandas as pd
 import ast
+import pathlib
 
 def main():
     console = Console()
@@ -33,26 +35,33 @@ def main():
     if (os.path.isdir(f"{download_path}") == False):
         console.print("Unable to reconize download path in [magenta][bold]config.yaml[/][/] file.", style="red")
         return
+    console.clear()
     while (True):
         console.print(f"\n[underline][green][bold]Swift Dead Portal Downloader[/][/][/]\n", justify='center')
-        console.print(f"\t[cyan]0[/]\tSearch and generate observation list\n\t[cyan]1[/]\tDownload results\n\t[cyan]n[/]\tView/edit manual naming scheme\n\t[cyan]q[/]\tQuit")
+        console.print(f"\t[cyan]0[/]\tSearch and generate observation list\n\t[cyan]1[/]\tDownload results\n\t[cyan]n[/]\tView/edit manual naming scheme\n\t[cyan]h[/]\tHelp\n\t[cyan]q[/]\tQuit program")
         user_input_1 = input()
         if (user_input_1 == 'q'):
             return
+        elif (user_input_1 == 'h'):
+            console.clear()
+            script_path = pathlib.Path(__file__).parent.resolve()
+            with open(f"{script_path}/HELP.md") as md:
+                markdown = Markdown(md.read())
+                console.print(markdown)
+            md.close()
         elif (user_input_1 == 'n'):
+            console.clear()
             while(True):
                 with open(f'{comet_names_path}', 'r') as file:
                     name_scheme = yaml.safe_load(file)
                 file.close() 
-                console.print(f"\n[underline][yellow][bold]Name Scheme[/][/][/]\n", justify='center')
-                console.print(f"\t[magenta]0[/]\tView current naming scheme\n\t[magenta]1[/]\tAdd element to naming scheme\n\t[magenta]2[/]\tRemove element from naming scheme\n\t[magenta]q[/]\tReturn to previous menu")
+                console.print(f"\n[underline][yellow][bold]Name Scheme[/][/][/]", justify='center')
+                print_name_scheme(name_scheme)
+                console.print(f"\n\t[magenta]0[/]\tAdd element to naming scheme\n\t[magenta]1[/]\tRemove element from naming scheme\n\t[magenta]q[/]\tReturn to previous menu")
                 user_input_2 = input()
                 if(user_input_2 == 'q'):
                     break
                 elif(user_input_2 == '0'):
-                    print_name_scheme(name_scheme)
-                    continue
-                elif(user_input_2 == '1'):
                     print()
                     new_sw_name = input("Enter new swift portal name: ")
                     new_cv_name = input("Enter new convectional name: ")
@@ -62,14 +71,14 @@ def main():
                         console.print(f"Confirm addition of [cyan]{stripped_sw}[/] to be renamed to [bright_green]{stripped_cv}[/]\n\t[cyan]y[/]\tConfirm\n\t[cyan]n[/]\tCancel and return to previous menu")
                         confirm_add = input()
                         if (confirm_add == 'n'):
-                            console.print("\nNothing added", style="cyan")
+                            console.clear()
                             break
                         elif (confirm_add == 'y'):
                             manual_add_name(stripped_sw, stripped_cv, name_scheme, comet_names_path)
-                            console.print(f"\n[bold]{stripped_sw}[/] -> [bold][bright_green]{stripped_cv}[/][/]", style='cyan')
+                            console.clear()
                             break
                     continue
-                elif(user_input_2 == '2'):
+                elif(user_input_2 == '1'):
                     print()
                     sw_name = input("Enter swift portal name to be removed: ")
                     stripped_sw = sw_name.strip()
@@ -78,22 +87,24 @@ def main():
                             console.print(f"Confirm removal of [cyan]{stripped_sw}[/]\n\t[cyan]y[/]\tConfirm\n\t[cyan]n[/]\tCancel and return to previous menu")
                             confirm_remove = input()
                             if (confirm_remove == 'n'):
-                                console.print("\nNothing removed", style="cyan")
+                                console.clear()
                                 break
                             elif (confirm_remove == 'y'):
                                 manual_remove_name(stripped_sw, name_scheme, comet_names_path)
-                                console.print(f"\n[bold]{stripped_sw}[/] removed", style='cyan')
+                                console.clear()
                                 break
                     else:
                         console.print(f"Unable to reconize swift portal name [cyan][bold]{sw_name}[/][/]", style="red")
                     continue
                 continue
         elif (user_input_1 == '0'):
+            console.clear()
             while(True):
                 console.print(f"\n[underline][yellow][bold]Search Options[/][/][/]\n", justify='center')
                 console.print(f"\t[magenta]0[/]\tSearch all comet results\n\t[magenta]1[/]\tSearch portal for specific query\n\t[magenta]q[/]\tReturn to previous menu")
                 user_input_3 = input()
                 if (user_input_3 == 'q'):
+                    console.clear()
                     break
                 elif (user_input_3 == '0'): 
                     search_terms = {"Comet", "P/", "C/"} 
@@ -116,6 +127,7 @@ def main():
                 elif (user_input_3 == '1'):
                     search_term = input(f"\nSearch term (press q to return to main menu): ")
                     if (search_term == 'q'):
+                        console.clear()
                         break
                     page_html, search_soup = search_page(search_term = search_term)
                     num_of_results = results_type(search_soup = search_soup) 
@@ -135,7 +147,7 @@ def main():
                     df.columns = ['Observation id(s)', 'Conventional name']
                     df.to_csv(r"portal_search_results.csv")
                     break
-        elif (user_input_1 == '1'):
+        elif (user_input_1 == '1'): 
             if (os.path.isfile(f'{working_path}/portal_search_results.csv') == False):
                 console.print("\n[red]Unable to find [/][magenta][bold]portal_search_results.csv[/][/][red] file in current directory.\nGenerate it using [/][magenta][bold]Search and generate observation list[/][/][red] option.")
                 continue
@@ -156,7 +168,7 @@ def main():
                     console.print(f'\nDownload finished', style="cyan")
                     break
                 elif (confirm_download == 'n'):
-                    console.print(f'\nDownload canceled', style="cyan")
+                    console.clear()
                     break
 
 if __name__ == "__main__":
