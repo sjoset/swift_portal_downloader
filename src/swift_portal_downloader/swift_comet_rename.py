@@ -47,16 +47,17 @@ def manual_fix(comet_name: str, name_schemes_path: str) -> str:
     if comet_name in name_scheme:
         proper_name = name_scheme[f'{comet_name}']
     else:
-        return add_new_name(comet_name, name_scheme)
+        return add_new_name(comet_name, name_scheme, name_schemes_path)
     return proper_name
 
-def add_new_name(comet_name: str, name_scheme: dict) -> str:
+def add_new_name(comet_name: str, name_scheme: dict, name_schemes_path) -> str:
     console = Console()
     console.print(f"Unable to classify [magenta]'{comet_name}'[/] observation name from the swift portal.", style='cyan')
     proper_name = input("Enter the correct conventional name for this observation: \n")
     name_scheme[f'{comet_name}'] = proper_name
-    with open('comet_names.yaml', 'w') as file:
+    with open(f'{name_schemes_path}', 'w') as file:
         yaml_output=yaml.dump(name_scheme, file)
+    file.close()
     return proper_name
 
 def rename_comet_name(comet_name: str, name_schemes_path: str) -> str: 

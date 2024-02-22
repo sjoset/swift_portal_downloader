@@ -40,11 +40,10 @@ def swift_download_uncompressed(obsid: str, tname:str, dtype: str, dest_dir: pat
     else:
         shutil.move(f'{dest_dir}/{obsid}', f'{dest_dir}/{tname}', copy_function = shutil.copytree)
     
-def download_files(tlist: str, dtype_list: str, dest_dir: str) -> None:
-    # downloads the files for 2+ results when searching
+def download_files(tlist: str, dtype_list: str, dest_dir: str) -> None: 
     # iterates over each requested data type and observation collected from get_multi_tlists()
-    for tids, tname in tlist:
-        for obsid in track(tids, description=f"[cyan]Downloading target id[/] [magenta]{tids[0][0:8]}[/][/][cyan]...[/]"):
+    for obsids_list, tname in tlist:
+        for obsid in track(obsids_list, description=f"[cyan]Downloading target id[/] [magenta]{obsids_list[0][0:8]}[/][/][cyan]...[/]"):
             for dtype in dtype_list: 
                 swift_download_uncompressed(obsid=obsid, tname=tname, dtype=dtype, dest_dir=dest_dir)
                 
