@@ -1,3 +1,3 @@
 download_path: '/Users/jduffy0121/Desktop/comet_download'
-comet_names_file_path: '/Users/jduffy0121/Desktop/AMO/Image_Analysis/mass_downloader/comet_names.yaml'
+comet_names_file_path: '/Users/jduffy0121/Desktop/AMO/Image_Analysis/swift_portal_downloader/comet_names.yaml'
 dtype_list: ['auxil', 'bat', 'xrt', 'uvot', 'log']

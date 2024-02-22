@@ -3,10 +3,10 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "massdownloader"
+name = "swift_portal_downloader"
 version = "0.0.1"
 authors = [ "Jacob Duffy" ]
-description = "Data reduction pipeline for determining water production rates from the Swift telescope's UVOT images"
+description = "Project to search and download swift comet images from the dead portal"
 classifiers = ["Programming Language :: Python :: 3",]
 readme = "README.md"
 license = "LICENSE"
@@ -22,6 +22,6 @@ pyyaml = "^6.0.1"
 pandas = "^2.2.0"
 
 [tool.poetry.scripts]
-md_tui = "massdownloader.main:main" 
+spd_tui = "swift_portal_downloader.swift_portal_downloader:main" 
 
 [tool.poetry.dev-dependencies]
