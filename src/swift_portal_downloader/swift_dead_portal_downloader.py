@@ -43,7 +43,7 @@ def swift_download_uncompressed(obsid: str, tname:str, dtype: str, dest_dir: pat
 def download_files(tlist: str, dtype_list: str, dest_dir: str) -> None: 
     # iterates over each requested data type and observation collected from get_multi_tlists()
     for obsids_list, tname in tlist:
-        for obsid in track(obsids_list, description=f"[cyan]Downloading target id[/] [magenta]{obsids_list[0][0:8]}[/][/][cyan]...[/]"):
+        for obsid in track(obsids_list, description=f"[cyan]Downloading target id[/] [magenta]{obsids_list[0][0:8]}[/][/][cyan] ...[/]"):
             for dtype in dtype_list: 
                 swift_download_uncompressed(obsid=obsid, tname=tname, dtype=dtype, dest_dir=dest_dir)
                 

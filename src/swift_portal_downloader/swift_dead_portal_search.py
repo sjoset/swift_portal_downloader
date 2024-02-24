@@ -58,7 +58,7 @@ def convert_tid_to_obsid(tid: str):
     
     overwrite_option = '-nc'
     base_wget_url = f'https://www.swift.ac.uk/archive/download.sh?reproc=1&tid={tid}&source=obs&subdir=auxil'
-    wget_response = requests.get(base_wget_url)
+    wget_response = requests.get(base_wget_url, timeout=None)
     wget_commands = [line for line in wget_response.text.splitlines() if 'wget' in line]
     urls = [command.split()[-1] for command in wget_commands]
     

@@ -1,26 +1,26 @@
 # Swift Portal Downloader  
-## Install poetry  
+## Install Poetry  
 Documentation can be found [https://www.python-poetry.org](https://www.python-poetry.org)  
 Install poetry with pip: 
 ```
     pip install poetry
 ```
-## Create conda environment with python
+## Create Conda Environment with Python
 ```
     conda create --name env_name_here python=3.11
     conda activate env_name_here
 ```
-## Install package locally  
+## Install Package Locally  
 In the repository's directory:
 ```
     poetry install
 ```
-## Running the program  
+## Running the Program  
 ```
     conda activate env_name_here
     spd_tui
 ```
-## Configuration file
+## Configuration File
 To run the program successfully, a file called **config.yaml** must be in the current directory.  
 It should contain the following elements:
 ```

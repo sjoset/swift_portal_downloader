@@ -23,15 +23,13 @@ def main():
         config = yaml.safe_load(file)
         try:
             download_path = config['download_path']
-            dtype_list = config['dtype_list']
-            comet_names_path = config['comet_names_file_path']
-            if (os.path.isfile(comet_names_path) == False):
-                console.print("Unable to find [magenta][bold]comet_names.yaml[/][/] file.", style="red")
-                return
+            dtype_list = config['dtype_list'] 
         except (KeyError, TypeError):
             console.print("Unable to read [magenta][bold]config.yaml[/][/] file in current directory.", style="red")
             return
-    file.close()  
+    file.close()
+    script_path = pathlib.Path(__file__).parent.resolve()
+    name_scheme_path = f'{script_path}/comet_names.yaml'
     if (os.path.isdir(f"{download_path}") == False):
         console.print("Unable to reconize download path in [magenta][bold]config.yaml[/][/] file.", style="red")
         return
@@ -43,7 +41,6 @@ def main():
         if (user_input_1 == 'q'):
             return
         elif (user_input_1 == 'i'):
-            script_path = pathlib.Path(__file__).parent.resolve()
             with open(f"{script_path}/INFO.md") as md:
                 markdown = Markdown(md.read())
                 console.print(markdown)
@@ -51,7 +48,7 @@ def main():
         elif (user_input_1 == 'n'):
             console.clear()
             while(True):
-                with open(f'{comet_names_path}', 'r') as file:
+                with open(f'{name_scheme_path}', 'r') as file:
                     name_scheme = yaml.safe_load(file)
                 file.close() 
                 console.print(f"\n[underline][yellow][bold]Name Scheme[/][/][/]", justify='center')
@@ -73,7 +70,7 @@ def main():
                         if (confirm_add == 'n'):
                             break
                         elif (confirm_add == 'y'):
-                            manual_add_name(stripped_sw, stripped_cv, name_scheme, comet_names_path)
+                            manual_add_name(stripped_sw, stripped_cv, name_scheme, name_scheme_path)
                             break
                     continue
                 elif(user_input_2 == '1'):
@@ -87,7 +84,7 @@ def main():
                             if (confirm_remove == 'n'):
                                 break
                             elif (confirm_remove == 'y'):
-                                manual_remove_name(stripped_sw, name_scheme, comet_names_path)
+                                manual_remove_name(stripped_sw, name_scheme, name_scheme_path)
                                 break
                     else:
                         console.print(f"Unable to reconize swift portal name [cyan][bold]{sw_name}[/][/]", style="red")
@@ -96,8 +93,8 @@ def main():
         elif (user_input_1 == '0'):
             console.clear()
             while(True):
-                console.print(f"\n[underline][yellow][bold]Search Options[/][/][/]\n", justify='center')
-                console.print(f"\t[magenta]0[/]\tMass search comet results\n\t[magenta]1[/]\tSearch portal for specific query\n\t[magenta]q[/]\tReturn to previous menu")
+                console.print(f"\n[underline][red][bold]Search Options[/][/][/]\n", justify='center')
+                console.print(f"\t[blue]0[/]\tMass search comet results\n\t[blue]1[/]\tSearch portal for specific query\n\t[blue]q[/]\tReturn to previous menu")
                 user_input_3 = input()
                 if (user_input_3 == 'q'):
                     console.clear()
@@ -106,15 +103,15 @@ def main():
                     search_terms = {"Comet", "P/", "C/"} 
                     results = []
                     print()
-                    for term in track(search_terms, description="[cyan]Searching portal...[/]"):
+                    for term in track(search_terms, description="[cyan]Searching portal ...[/]"):
                         page_html, search_soup = search_page(search_term = term)
                         tlist = get_multi_tlists(search_term = term, search_soup = search_soup)
                         results.append(tlist)
                     full_results = results[0] + results[1] + results[2]
                     condensed_list = set(full_results)
-                    console.print('Converting target names[cyan]...[/]', style="cyan")
-                    new_name_list = [(tid, rename_comet_name(tname, comet_names_path)) for (tid, tname) in condensed_list]
-                    converted_list = [(convert_tid_to_obsid(tid), conventional_name) for (tid, conventional_name) in track(new_name_list, description="[cyan]Generating observation ids...[/]")] 
+                    console.print('Converting target names[cyan] ...[/]', style="cyan")
+                    new_name_list = [(tid, rename_comet_name(tname, name_scheme_path)) for (tid, tname) in condensed_list]
+                    converted_list = [(convert_tid_to_obsid(tid), conventional_name) for (tid, conventional_name) in track(new_name_list, description="[cyan]Generating observation ids ...[/]")] 
                     console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to current directory.') 
                     df = pd.DataFrame(converted_list) 
                     df.columns = ['Observation id(s)', 'Conventional name']
@@ -132,12 +129,13 @@ def main():
                         break
                     elif (num_of_results == '1'):
                         tlist = get_single_tlist(search_term = search_term, search_soup = search_soup)
+                        console.print('Converting target names[cyan] ...[/]', style="cyan")
                         converted_list=[(convert_tid_to_obsid(tlist[1]), rename_comet_name(tlist[0], comet_names_path))] 
                     else:
                         tlist = get_multi_tlists(search_term = search_term, search_soup = search_soup) 
-                        console.print('Converting target names[cyan]...[/]', style="cyan")
-                        new_name_list = [(tid, rename_comet_name(tname, comet_names_path)) for (tid, tname) in tlist]
-                        converted_list = [(convert_tid_to_obsid(tid), conventional_name) for (tid, conventional_name) in track(new_name_list, description="[cyan]Generating observation ids...[/]")] 
+                        console.print('Converting target names[cyan] ...[/]', style="cyan")
+                        new_name_list = [(tid, rename_comet_name(tname, name_scheme_path)) for (tid, tname) in tlist]
+                        converted_list = [(convert_tid_to_obsid(tid), conventional_name) for (tid, conventional_name) in track(new_name_list, description="[cyan]Generating observation ids ...[/]")] 
                     console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to current directory.') 
                     df = pd.DataFrame(converted_list) 
                     df.columns = ['Observation id(s)', 'Conventional name']
@@ -155,11 +153,11 @@ def main():
                 console.print(f'\n[green]Confirm download to:[/] [magenta]{download_path}[/]\n\t[cyan]y[/]\tConfirm\n\t[cyan]n[/]\tCancel and return to main menu')
                 confirm_download = input()
                 if (confirm_download == 'y'):
-                    console.print(f"\nRemoving incomplete downloads[cyan]...[/]", style="cyan")
+                    console.print(f"\nRemoving incomplete downloads[cyan] ...[/]", style="cyan")
                     remove_incomplete_downloads(download_path=download_path, working_path=working_path)
-                    console.print("Preparing download directory[cyan]...[/]", style="cyan")
+                    console.print("Preparing download directory[cyan] ...[/]", style="cyan")
                     prepare_download_dir(tlist, download_path)
-                    console.print("Beginning download[cyan]...[/]\n", style="cyan")
+                    console.print("Beginning download[cyan] ...[/]\n", style="cyan")
                     download_files(tlist=tlist, dtype_list=dtype_list, dest_dir=download_path)
                     console.print(f'\nDownload finished', style="cyan")
                     break
