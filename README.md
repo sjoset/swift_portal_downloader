@@ -25,5 +25,5 @@ To run the program, a file called **config.yaml** must be in the current directo
 ### config.yaml
 ```
     download_path: directory to download images  
-    dtype_list: list containing a combination of the following elements ['auxil', 'bat', 'xrt', 'uvot', 'log']  
+    dtype_list: list containing a combination of ['auxil', 'bat', 'xrt', 'uvot', 'log']  
 ```
