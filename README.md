@@ -28,6 +28,7 @@ It should contain the following elements:
     dtype_list: list containing a combination of ['auxil', 'bat', 'xrt', 'uvot', 'log']  
 ```
 #### Config.yaml
+Here is an example of a config.yaml file:
 ```
     download_path: 'Users/user/downloads'
     dtype_list: ['auxil', 'uvot', 'log']  
