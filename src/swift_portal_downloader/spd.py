@@ -38,14 +38,13 @@ def main():
     console.clear()
     while (True):
         console.print(f"\n[underline][green][bold]Swift Dead Portal Downloader[/][/][/]\n", justify='center')
-        console.print(f"\t[cyan]0[/]\tSearch and generate observation list\n\t[cyan]1[/]\tDownload results\n\t[cyan]n[/]\tView/edit manual naming scheme\n\t[cyan]h[/]\tHelp\n\t[cyan]q[/]\tQuit program")
+        console.print(f"\t[cyan]0[/]\tSearch and generate observation list\n\t[cyan]1[/]\tDownload results\n\t[cyan]n[/]\tView/edit manual naming scheme\n\t[cyan]i[/]\tInformation\n\t[cyan]q[/]\tQuit program")
         user_input_1 = input()
         if (user_input_1 == 'q'):
             return
-        elif (user_input_1 == 'h'):
-            console.clear()
+        elif (user_input_1 == 'i'):
             script_path = pathlib.Path(__file__).parent.resolve()
-            with open(f"{script_path}/HELP.md") as md:
+            with open(f"{script_path}/INFO.md") as md:
                 markdown = Markdown(md.read())
                 console.print(markdown)
             md.close()
@@ -60,6 +59,7 @@ def main():
                 console.print(f"\n\t[magenta]0[/]\tAdd element to naming scheme\n\t[magenta]1[/]\tRemove element from naming scheme\n\t[magenta]q[/]\tReturn to previous menu")
                 user_input_2 = input()
                 if(user_input_2 == 'q'):
+                    console.clear()
                     break
                 elif(user_input_2 == '0'):
                     print()
@@ -71,11 +71,9 @@ def main():
                         console.print(f"Confirm addition of [cyan]{stripped_sw}[/] to be renamed to [bright_green]{stripped_cv}[/]\n\t[cyan]y[/]\tConfirm\n\t[cyan]n[/]\tCancel and return to previous menu")
                         confirm_add = input()
                         if (confirm_add == 'n'):
-                            console.clear()
                             break
                         elif (confirm_add == 'y'):
                             manual_add_name(stripped_sw, stripped_cv, name_scheme, comet_names_path)
-                            console.clear()
                             break
                     continue
                 elif(user_input_2 == '1'):
@@ -87,11 +85,9 @@ def main():
                             console.print(f"Confirm removal of [cyan]{stripped_sw}[/]\n\t[cyan]y[/]\tConfirm\n\t[cyan]n[/]\tCancel and return to previous menu")
                             confirm_remove = input()
                             if (confirm_remove == 'n'):
-                                console.clear()
                                 break
                             elif (confirm_remove == 'y'):
                                 manual_remove_name(stripped_sw, name_scheme, comet_names_path)
-                                console.clear()
                                 break
                     else:
                         console.print(f"Unable to reconize swift portal name [cyan][bold]{sw_name}[/][/]", style="red")
@@ -101,7 +97,7 @@ def main():
             console.clear()
             while(True):
                 console.print(f"\n[underline][yellow][bold]Search Options[/][/][/]\n", justify='center')
-                console.print(f"\t[magenta]0[/]\tSearch all comet results\n\t[magenta]1[/]\tSearch portal for specific query\n\t[magenta]q[/]\tReturn to previous menu")
+                console.print(f"\t[magenta]0[/]\tMass search comet results\n\t[magenta]1[/]\tSearch portal for specific query\n\t[magenta]q[/]\tReturn to previous menu")
                 user_input_3 = input()
                 if (user_input_3 == 'q'):
                     console.clear()
