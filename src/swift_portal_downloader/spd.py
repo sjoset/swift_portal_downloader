@@ -12,6 +12,7 @@ import yaml
 import pandas as pd
 import ast
 import pathlib
+import sys
 
 def main():
     console = Console()
@@ -94,7 +95,7 @@ def main():
             console.clear()
             while(True):
                 console.print(f"\n[underline][red][bold]Search Options[/][/][/]\n", justify='center')
-                console.print(f"\t[blue]0[/]\tMass search comet results\n\t[blue]1[/]\tSearch portal for specific query\n\t[blue]q[/]\tReturn to previous menu")
+                console.print(f"\t[blue]0[/]\tMass search for comets\n\t[blue]1[/]\tSearch portal for specific query\n\t[blue]q[/]\tReturn to previous menu")
                 user_input_3 = input()
                 if (user_input_3 == 'q'):
                     console.clear()
