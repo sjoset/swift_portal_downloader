@@ -4,7 +4,7 @@ A program to search and download images from the swift dead portal ([www.swift.a
 - Given two options (**mass search comets** and **specific query**). 
 - Mass search will search the portal for 
 the terms "C/", "P/", and "Comet" and generate the observation list (which contains all observation id(s) and conventional names).  
-- Specific search query will allow you to search the portal for a term and gernerate the observation list based on that.  
+- Specific search query will allow you to search the portal for a term and gernerate the observation list based on the results.  
 - All observation list files will be downloaded to the current working directory as **"portal_search_results.csv"**.    
 ## Downloading
 - Will download all observation id(s) found in the observation list.
