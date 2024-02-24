@@ -20,10 +20,15 @@ In the repository's directory:
     conda activate env_name_here
     spd_tui
 ```
-## Config file  
+## Configuration file
 To run the program, a file called **config.yaml** must be in the current directory.  
 It should contain the following elements:
 ```
     download_path: directory to download images  
     dtype_list: list containing a combination of ['auxil', 'bat', 'xrt', 'uvot', 'log']  
+```
+#### Config.yaml
+```
+    download_path: 'Users/user/downloads'
+    dtype_list: ['auxil', 'uvot', 'log']  
 ```
