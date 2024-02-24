@@ -21,7 +21,7 @@ In the repository's directory:
     spd_tui
 ```
 ## Configuration file
-To run the program ssuccessfully, a file called **config.yaml** must be in the current directory.  
+To run the program successfully, a file called **config.yaml** must be in the current directory.  
 It should contain the following elements:
 ```
     download_path: directory to download images  
