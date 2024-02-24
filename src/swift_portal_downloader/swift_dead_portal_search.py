@@ -63,10 +63,6 @@ def convert_tid_to_obsid(tid: str):
     urls = [command.split()[-1] for command in wget_commands]
     
     # iterates through each wget url created for all obsids
-    obsids = []
-    i = 0
-    while i < len(urls):
-        link = urls[i]
-        obsids.append(link[38:-7])
-        i += 1
+    obsids =[url[38:-7] for url in urls]
+    
     return obsids
