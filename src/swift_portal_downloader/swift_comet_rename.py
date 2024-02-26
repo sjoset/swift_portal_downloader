@@ -3,6 +3,7 @@ from typing import List, Optional
 
 import re
 import yaml
+import pathlib
 
 # Function to match comet_names that contain C/ or Comet#### formatting
 def match_long_period_name(comet_name: str) -> Optional[str]:
@@ -45,18 +46,18 @@ def match_short_period_name(comet_name: str) -> Optional[str]:
     return short_period_name
 
 # Function to match comet_names that can be found in the name_scheme
-def manual_fix(comet_name: str, name_schemes_path: str) -> str:
-    with open(f'{name_schemes_path}', 'r') as file:
+def manual_fix(comet_name: str, name_scheme_path: pathlib.Path) -> str:
+    with open(f'{name_scheme_path}', 'r') as file:
         name_scheme = yaml.safe_load(file)
     file.close()
     if comet_name in name_scheme: # Name found in current name_scheme (no overwrite needed)
         proper_name = name_scheme[f'{comet_name}']
     else: # Name not found in current name_scheme, addition and overwrite required
-        return add_new_name(comet_name, name_scheme, name_schemes_path)
+        return add_new_name(comet_name=comet_name, name_scheme=name_scheme, name_scheme_path=name_scheme_path)
     return proper_name
 
 # Function to add to and overwrite the current name_scheme
-def add_new_name(comet_name: str, name_scheme: dict, name_schemes_path) -> str:
+def add_new_name(comet_name: str, name_scheme: dict, name_scheme_path: pathlib.Path) -> str:
     console = Console()
 
     # Requst conventional_name from user and add name
@@ -65,7 +66,7 @@ def add_new_name(comet_name: str, name_scheme: dict, name_schemes_path) -> str:
     name_scheme[f'{comet_name}'] = proper_name
 
     # Overwrite current name_scheme
-    with open(f'{name_schemes_path}', 'w') as file:
+    with open(f'{name_scheme_path}', 'w') as file:
         yaml_output=yaml.dump(name_scheme, file)
     file.close()
 
@@ -73,15 +74,15 @@ def add_new_name(comet_name: str, name_scheme: dict, name_schemes_path) -> str:
 
 # Function to match a given comet_name to a conventional_name
 # This method will always return the conventional_name as a string
-def rename_comet_name(comet_name: str, name_schemes_path: str) -> str: 
+def rename_comet_name(comet_name: str, name_scheme_path: pathlib.Path) -> str: 
     
     # Replace all conventional_names / with _ for when we format our download_dir 
-    long_name=match_long_period_name(comet_name)
+    long_name=match_long_period_name(comet_name=comet_name)
     if (long_name != None):
         return long_name.replace('/', '_') 
-    short_name=match_short_period_name(comet_name)
+    short_name=match_short_period_name(comet_name=comet_name)
     if (short_name != None):
         return short_name.replace('/', '_')
     else:
-        name = manual_fix(comet_name, name_schemes_path)
+        name = manual_fix(comet_name=comet_name, name_scheme_path=name_scheme_path)
         return name.replace('/', '_')

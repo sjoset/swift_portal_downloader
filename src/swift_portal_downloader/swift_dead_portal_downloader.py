@@ -1,7 +1,7 @@
-import pathlib
 from rich.progress import track
 from typing import List, Tuple
 
+import pathlib
 import subprocess
 import os
 import shutil
@@ -60,12 +60,11 @@ def swift_download_uncompressed(obsid: str, tname:str, dtype: str, dest_dir: pat
 
 # Function to download data in dtype_list for all obsids found in tlist
 # Only uncompressed downloads work at this time
-def download_files(tlist: str, dtype_list: str, dest_dir: str) -> None: 
+def download_files(tlist: str, dtype_list: str, dest_dir: pathlib.Path) -> None: 
 
     # Iterates through tlist which has [(list['obsid'], conventional_name), ...]
     # Will download all dtypes specified in dtype_list for a single obsid before moving on to the next
     for obsids_list, tname in tlist:
         for obsid in track(obsids_list, description=f"[cyan]Downloading target id[/] [magenta]{obsids_list[0][0:8]}[/][/][cyan] ...[/]"):
             for dtype in dtype_list: 
-                swift_download_uncompressed(obsid=obsid, tname=tname, dtype=dtype, dest_dir=dest_dir)
-                
+                swift_download_uncompressed(obsid=obsid, tname=tname, dtype=dtype, dest_dir=dest_dir) 

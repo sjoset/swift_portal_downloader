@@ -1,11 +1,16 @@
+from .swift_comet_rename import rename_comet_name
+
 from bs4 import BeautifulSoup
 from typing import List, Tuple
+from rich.console import Console
+from rich.progress import track
 
 import requests
+import pathlib
 
 # Function to generate the page_html and search_soup for a given search_term
 # This is the only time we directly requests the portal's url without using wget
-def search_page(search_term: str) -> (str, str):
+def search_page(search_term: str) -> Tuple[str, str]:
     
     # Construct the search url
     base_search_url = 'https://www.swift.ac.uk/dead_portal/getobject.php'
@@ -31,7 +36,7 @@ def results_type(search_soup: str) -> str:
 
 # Function to find the tname and tid from a given search soup
 # This is for search_terms that had only 1 result found
-def get_single_tlist(search_soup: str) -> [str, str]:
+def get_single_tlist(search_soup: str) -> List[Tuple[str, str]]:
     
     # Search the saved soup of the page for the tid and tname
     page_head = str(search_soup.find_all('h1')[0])
@@ -61,8 +66,40 @@ def get_multi_tlists(search_soup: str) -> List[Tuple[str, str]]:
     all_targets_zip = zip(tids, tnames)
     return list(all_targets_zip)
 
+def mass_search(search_terms: list, name_scheme_path: pathlib.Path) -> List[Tuple[str, str]]:
+    
+    console = Console()
+    print()
+
+    # Collect all search results from search_terms
+    results = []
+    for term in track(search_terms, description="[cyan]Searching portal ...[/]"):
+        page_html, search_soup = search_page(search_term = term)
+        tlist = get_multi_tlists(search_soup = search_soup)
+        results.append(tlist)
+    full_results = results[0] + results[1] + results[2]
+    
+    # Remove all duplicate search results
+    condensed_list = set(tlist) 
+
+    return convert_list_multi(tlist=full_results, name_scheme_path=name_scheme_path)
+
+def convert_list_multi(tlist: str, name_scheme_path: pathlib.Path) -> List[Tuple[str, str]]:
+    
+    console = Console()
+
+    # Converting all swift names -> conventional names
+    console.print('Converting target names[cyan] ...[/]', style="cyan")
+    new_name_list = [(tid, rename_comet_name(comet_name=tname, name_scheme_path=name_scheme_path)) for (tid, tname) in tlist]
+
+    # Converting all tids -> list[obsids]
+    converted_list = [(convert_tid_to_obsid(tid=tid), conventional_name) for (tid, conventional_name) in track(new_name_list, description="[cyan]Generating observation ids ...[/]")]
+    
+    return converted_list
+
+
 # Function to generate a list of all obsids from a given tid
-def convert_tid_to_obsid(tid: str) -> list[str]:
+def convert_tid_to_obsid(tid: str) -> List[str]:
     
     # For any given target id, there may be multiple observations in their own directories,
     # with the naming scheme {target id}001/, {target id}002/, etc.

@@ -1,6 +1,6 @@
-from .swift_dead_portal_search import search_page, get_multi_tlists, get_single_tlist, results_type, convert_tid_to_obsid
+from .swift_dead_portal_search import search_page, get_multi_tlists, get_single_tlist, results_type, convert_tid_to_obsid, mass_search, convert_list_multi
 from .swift_dead_portal_downloader import download_files
-from .swift_utils import prepare_download_dir, remove_incomplete_downloads, print_name_scheme, manual_add_name, manual_remove_name
+from .swift_utils import prepare_download_dir, remove_incomplete_downloads, print_name_scheme, manual_add_name, manual_remove_name, dump_dataframe
 from .swift_comet_rename import rename_comet_name
 
 from rich.console import Console
@@ -48,7 +48,6 @@ def main():
     #   script_path = where spd.py is located
     #   name_scheme_path = where comet_names.yaml should be located
     #   info_path = where INFO.md should be located
-
     working_path = os.getcwd()
     script_path = pathlib.Path(__file__).parent.resolve()
     name_scheme_path = f'{script_path}/comet_names.yaml'
@@ -59,11 +58,9 @@ def main():
     #       -the file doesn't exist in working_path
     #       -the file doesn't have download_path and dtype_list
     # Will read in obs_list_path if exist (defaults to working_path if not)
-
     if (os.path.isfile(f'{working_path}/config.yaml') == False):
         console.print("[red]Unable to find [/][magenta][bold]config.yaml[/][/][red] file in current directory.[/]")
         return
-
     with open(f'{working_path}/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
         try:
@@ -111,9 +108,9 @@ def main():
             # Test to see if INFO.md is missing or not
             if (os.path.isfile(f'{info_path}') == False):
                 console.print(f"Unable to reconize INFO.md file in [magenta][bold]{script_path}[/][/]", style="red")
-
+            
+            # Will read INFO.md and display it to the console()
             else:
-                # Will read INFO.md and display it to the console()
                 with open(f"{info_path}") as md:
                     markdown = Markdown(md.read())
                     console.print(markdown)
@@ -159,9 +156,9 @@ def main():
                             break
 
                         elif (confirm_add == 'y'):
-
-                            manual_add_name(stripped_sw, stripped_cv, name_scheme, name_scheme_path)
+                            manual_add_name(swift_name=stripped_sw, conventional_name=stripped_cv, name_scheme=name_scheme, name_scheme_path=name_scheme_path)
                             break
+
                     continue
 
                 elif(user_input_2 == '1'): # LEVEL 2: User selected remove name
@@ -182,10 +179,12 @@ def main():
                                 break
 
                             elif (confirm_remove == 'y'):
-                                manual_remove_name(stripped_sw, name_scheme, name_scheme_path)
+                                manual_remove_name(swift_name=stripped_sw, name_scheme=name_scheme, name_scheme_path=name_scheme_path)
                                 break
+
                     else:
                         console.print(f"Unable to reconize swift portal name [cyan][bold]{sw_name}[/][/]", style="red")
+
                     continue
                 continue
 
@@ -210,31 +209,10 @@ def main():
                     results = []
                     print()
                     
-                    # Collect all search results from search_terms
-                    for term in track(search_terms, description="[cyan]Searching portal ...[/]"):
-                        page_html, search_soup = search_page(search_term = term)
-                        tlist = get_multi_tlists(search_soup = search_soup)
-                        results.append(tlist)
-                    full_results = results[0] + results[1] + results[2]
-                    
-                    # Remove all duplicate search results
-                    condensed_list = set(full_results) 
-
-                    # Converting all swift names -> conventional names
-                    console.print('Converting target names[cyan] ...[/]', style="cyan")
-                    new_name_list = [(tid, rename_comet_name(tname, name_scheme_path)) for (tid, tname) in condensed_list]
-
-                    # Converting all tids -> list[obsids]
-                    converted_list = [(convert_tid_to_obsid(tid), conventional_name) for (tid, conventional_name) in track(new_name_list, description="[cyan]Generating observation ids ...[/]")]
+                    tlist = mass_search(search_terms=search_terms, name_scheme_path=name_scheme_path)
                     
                     # Dumping the finalized converted list to a pandas df -> csv to obs_list_path
-                    if (obs_list_path == working_path):
-                        console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to current directory.')
-                    else:
-                        console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to [bold][magenta]{obs_list_path}[/][/].')
-                    df = pd.DataFrame(converted_list) 
-                    df.columns = ['Observation id(s)', 'Conventional name']
-                    df.to_csv(f"{obs_list_path}/portal_search_results.csv")
+                    dump_dataframe(tlist=converted_list, output_path=obs_list_path, working_path=working_path)
                     break
 
                 elif (user_input_3 == '1'): # LEVEL 2: User selected specific search term
@@ -245,38 +223,26 @@ def main():
                         break
                     
                     # Determing how many results 0, 1, or 2+ as the html of the page is different for these three cases
-                    page_html, search_soup = search_page(search_term = search_term)
-                    num_of_results = results_type(search_soup = search_soup) 
+                    page_html, search_soup = search_page(search_term=search_term)
+                    num_of_results = results_type(search_soup=search_soup) 
 
                     if (num_of_results == '0'): # No results found
                         console.print(f"No results found for [magenta]{search_term}[/].", style="cyan")
                         break
 
                     elif (num_of_results == '1'): # Only 1 results found
-                        tlist = get_single_tlist(search_soup = search_soup)
+                        search_results = get_single_tlist(search_soup=search_soup)
                         console.print('Converting target names[cyan] ...[/]', style="cyan")
 
                         # Converting both swift name -> conventional name and tids -> list[obsids]
-                        converted_list=[(convert_tid_to_obsid(tlist[1]), rename_comet_name(tlist[0], comet_names_path))] 
+                        tlist = [(convert_tid_to_obsid(tid=search_results[1]), rename_comet_name(comet_name=search_results[0], name_scheme_path=name_scheme_path))] 
 
                     else: # 2+ results (following same code structure as mass search)
-                        tlist = get_multi_tlists(search_soup = search_soup) 
-                        console.print('Converting target names[cyan] ...[/]', style="cyan")
-                        
-                        # Converting all swift names -> conventional names
-                        new_name_list = [(tid, rename_comet_name(tname, name_scheme_path)) for (tid, tname) in tlist]
+                        search_results = get_multi_tlists(search_soup=search_soup) 
+                        tlist = convert_list_multi(tlist=search_results, name_scheme_path=name_scheme_path)
 
-                        # Converting all tids -> list[obsids]
-                        converted_list = [(convert_tid_to_obsid(tid), conventional_name) for (tid, conventional_name) in track(new_name_list, description="[cyan]Generating observation ids ...[/]")] 
-                    
                     # Dumping the finalized converted list to a pandas df -> csv to obs_list_path
-                    if (obs_list_path == working_path):
-                        console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to current directory.')
-                    else:
-                        console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to [bold][magenta]{obs_list_path}[/][/].') 
-                    df = pd.DataFrame(converted_list) 
-                    df.columns = ['Observation id(s)', 'Conventional name']
-                    df.to_csv(f"{obs_list_path}/portal_search_results.csv")
+                    dump_dataframe(tlist=tlist, output_path=obs_list_path, working_path=working_path)
                     break
 
         elif (user_input_1 == '1'): # LEVEl 1: User selected download
@@ -309,7 +275,7 @@ def main():
 
                     # Add all conventionals names to download directory (ie: download_path/conventional_name)
                     console.print("Preparing download directory[cyan] ...[/]", style="cyan")
-                    prepare_download_dir(tlist, download_path)
+                    prepare_download_dir(tlist=tlist, download_path=download_path)
 
                     # Download files
                     console.print("Beginning download[cyan] ...[/]\n", style="cyan")
