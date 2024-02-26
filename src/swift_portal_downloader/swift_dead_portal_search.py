@@ -80,9 +80,9 @@ def mass_search(search_terms: list, name_scheme_path: pathlib.Path) -> List[Tupl
     full_results = results[0] + results[1] + results[2]
     
     # Remove all duplicate search results
-    condensed_list = set(tlist) 
+    condensed_list = set(full_results) 
 
-    return convert_list_multi(tlist=full_results, name_scheme_path=name_scheme_path)
+    return convert_list_multi(tlist=condensed_list, name_scheme_path=name_scheme_path)
 
 def convert_list_multi(tlist: str, name_scheme_path: pathlib.Path) -> List[Tuple[str, str]]:
     
