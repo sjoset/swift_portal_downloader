@@ -46,11 +46,13 @@ def main():
     # Loads in all the paths for the script
     #   working_path = current cwd
     #   script_path = where spd.py is located
-    #   name_scheme_path = where comet_names.yaml is located
+    #   name_scheme_path = where comet_names.yaml should be located
+    #   info_path = where INFO.md should be located
 
     working_path = os.getcwd()
     script_path = pathlib.Path(__file__).parent.resolve()
     name_scheme_path = f'{script_path}/comet_names.yaml'
+    info_path = f'{script_path}/INFO.md'
 
     # Loads and reads config
     # Throws errors if 
@@ -76,12 +78,16 @@ def main():
             obs_list_path = working_path
     file.close()
 
-    name_scheme_path = f'{script_path}/comet_names.yaml'
-
     # Test to see if download_path is actually a path
     if (os.path.isdir(f"{download_path}") == False):
         console.print("Unable to reconize download path in [magenta][bold]config.yaml[/][/] file.", style="red")
         return
+
+    # Adds new name scheme if for some reason it does not exist currently
+    if (os.path.isfile(f"{name_scheme_path}") == False):
+        new_scheme = open(f"{name_scheme_path}", 'w')
+        new_scheme.close()
+
     console.clear()
 
     # Entering level 1 of the menu:
@@ -101,12 +107,17 @@ def main():
             return
 
         elif (user_input_1 == 'i'): # LEVEL 1: User selected info
+            
+            # Test to see if INFO.md is missing or not
+            if (os.path.isfile(f'{info_path}') == False):
+                console.print(f"Unable to reconize INFO.md file in [magenta][bold]{script_path}[/][/]", style="red")
 
-            # Will read INFO.md and display it to the console()
-            with open(f"{script_path}/INFO.md") as md:
-                markdown = Markdown(md.read())
-                console.print(markdown)
-            md.close()
+            else:
+                # Will read INFO.md and display it to the console()
+                with open(f"{info_path}") as md:
+                    markdown = Markdown(md.read())
+                    console.print(markdown)
+                md.close()
         
         elif (user_input_1 == 'n'): # LEVEL 1: User selected name_scheme
             console.clear()
