@@ -263,7 +263,10 @@ def main():
 
             # Test to see if the results csv is in the obs_list_path, throws error if not
             if (os.path.isfile(f'{obs_list_path}/portal_search_results.csv') == False):
-                console.print("\n[red]Unable to find [/][magenta][bold]portal_search_results.csv[/][/][red] file in current directory.\nGenerate it using [/][magenta][bold]Search and generate observation list[/][/][red] option.")
+                if (obs_list_path == working_path):
+                    console.print("\n[red]Unable to find [/][magenta][bold]portal_search_results.csv[/][/][red] file in current directory.\nGenerate it using [/][magenta][bold]Search and generate observation list[/][/][red] option.")
+                else:
+                     console.print(f"\n[red]Unable to find [/][magenta][bold]portal_search_results.csv[/][/][red] file in [/][magenta][bold]{obs_list_path}[/][/][red].\nGenerate it using [/][magenta][bold]Search and generate observation list[/][/][red] option.")
                 continue
 
             # Converts results.csv -> pandas df -> list
