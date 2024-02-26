@@ -1,6 +1,6 @@
 # Swift Portal Downloader  
 ## Install Poetry  
-Documentation can be found [https://www.python-poetry.org](https://www.python-poetry.org)  
+Documentation can be found here: [https://www.python-poetry.org](https://www.python-poetry.org)  
 Install poetry with pip: 
 ```
     pip install poetry
