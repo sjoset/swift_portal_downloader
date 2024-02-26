@@ -18,18 +18,27 @@ import sys
 
 # Diver program for the swift_portal_downloader
 
-# Menu layout tree:
-#           Program init
-#                 |
-#           read config
-#                 |
-#           user_input_1
-#         /       |       \
-#     Search   Download   Name_scheme
-#         |                  |
-#    user_input_3       user_input_2
-#       /    \            /    \
-#   Mass    Specific    Add    Remove
+# ==============================================================
+# ==============================================================
+#                   Program init
+#                       |
+#                   read config
+#                       |
+#               --- user_input_1  -----        
+#              /    |       |   \      \
+#             /     |       |    \      \
+#            /      |       |     \      \
+#           /       |       |      \      \
+#          /        |       |       \      \
+#     search      info   download  quit    name_scheme
+#         |                 |        |         |
+#    user_input_3     read resuls   exit  user_input_2
+#       /    \                              /      \
+#   mass    specific                      add   remove
+#      \      /                             \      /
+#     dump results                      dump name_scheme
+# ==============================================================
+# ==============================================================
 
 def main():
     console = Console()
@@ -266,7 +275,7 @@ def main():
                 if (obs_list_path == working_path):
                     console.print("\n[red]Unable to find [/][magenta][bold]portal_search_results.csv[/][/][red] file in current directory.\nGenerate it using [/][magenta][bold]Search and generate observation list[/][/][red] option.")
                 else:
-                     console.print(f"\n[red]Unable to find [/][magenta][bold]portal_search_results.csv[/][/][red] file in [/][magenta][bold]{obs_list_path}[/][/][red].\nGenerate it using [/][magenta][bold]Search and generate observation list[/][/][red] option.")
+                     console.print(f"\n[red]Unable to find [/][magenta][bold]portal_search_results.csv[/][/][red] file in [/][magenta][bold]{obs_list_path}.\nGenerate it using [/][magenta][bold]Search and generate observation list[/][/][red] option.")
                 continue
 
             # Converts results.csv -> pandas df -> list
