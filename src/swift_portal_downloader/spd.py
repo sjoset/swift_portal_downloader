@@ -279,7 +279,7 @@ def main():
                 continue
 
             # Converts results.csv -> pandas df -> list
-            df=pd.read_csv(f'{working_path}/portal_search_results.csv')
+            df=pd.read_csv(f'{obs_list_path}/portal_search_results.csv')
             df_list=df.values.tolist()
 
             # Pulls out all obsids as a list['obsids']
