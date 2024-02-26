@@ -5,7 +5,7 @@ A program to search and download images from the swift dead portal ([www.swift.a
 - Mass search will search the portal for 
 the terms "C/", "P/", and "Comet" and generate the observation list (which contains all observation id(s) and conventional names).  
 - Specific search query will allow you to search the portal for a term and gernerate the observation list based on the results.  
-- All observation list files will be downloaded to the current working directory as **"portal_search_results.csv"**.    
+- All observation list files will be downloaded to the observation list path or current working directory as **"portal_search_results.csv"**.    
 ## Downloading
 - Will download all observation id(s) found in the observation list.
 - The observation list must be in the current working directory.  
@@ -18,5 +18,6 @@ both are C/2013US10 images).
 - When searching the portal, we convert this swift name to a conventional name by using the regular expressions search operation,
 however, some names cannot be convered using this method, thus a manual naming scheme is used.
 - If a swift name is not able to be convered when generating the observation list and it is not found in the naming scheme, then you will
-be required to enter the conventional name and update the name scheme.
-- The manual name scheme can be viewed or edited at any time.
+be required to enter the conventional name and update the naming scheme.
+- The manual naming scheme can be viewed or edited at any time.
+

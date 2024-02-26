@@ -28,6 +28,10 @@ def main():
         except (KeyError, TypeError):
             console.print("Unable to read [magenta][bold]config.yaml[/][/] file in current directory.", style="red")
             return
+        try:
+            obs_list_path = config['obs_list_path']
+        except (KeyError, TypeError):
+            obs_list_path = working_path
     file.close()
     script_path = pathlib.Path(__file__).parent.resolve()
     name_scheme_path = f'{script_path}/comet_names.yaml'
@@ -112,11 +116,14 @@ def main():
                     condensed_list = set(full_results)
                     console.print('Converting target names[cyan] ...[/]', style="cyan")
                     new_name_list = [(tid, rename_comet_name(tname, name_scheme_path)) for (tid, tname) in condensed_list]
-                    converted_list = [(convert_tid_to_obsid(tid), conventional_name) for (tid, conventional_name) in track(new_name_list, description="[cyan]Generating observation ids ...[/]")] 
-                    console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to current directory.') 
+                    converted_list = [(convert_tid_to_obsid(tid), conventional_name) for (tid, conventional_name) in track(new_name_list, description="[cyan]Generating observation ids ...[/]")]
+                    if (obs_list_path == working_path):
+                        console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to current directory.')
+                    else:
+                        console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to [bold][magenta]{obs_list_path}[/][/].')
                     df = pd.DataFrame(converted_list) 
                     df.columns = ['Observation id(s)', 'Conventional name']
-                    df.to_csv(r"portal_search_results.csv")
+                    df.to_csv(f"{obs_list_path}/portal_search_results.csv")
                     break
                 elif (user_input_3 == '1'):
                     search_term = input(f"\nSearch term (press q to return to main menu): ")
@@ -137,10 +144,13 @@ def main():
                         console.print('Converting target names[cyan] ...[/]', style="cyan")
                         new_name_list = [(tid, rename_comet_name(tname, name_scheme_path)) for (tid, tname) in tlist]
                         converted_list = [(convert_tid_to_obsid(tid), conventional_name) for (tid, conventional_name) in track(new_name_list, description="[cyan]Generating observation ids ...[/]")] 
-                    console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to current directory.') 
+                    if (obs_list_path == working_path):
+                        console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to current directory.')
+                    else:
+                        console.print(f'Found [bold][cyan]{len(converted_list)}[/][/] [bright_white]target id(s)[/] from the portal.\nDumping search results to [bold][magenta]portal_search_results.csv[/][/] to [bold][magenta]{obs_list_path}[/][/].') 
                     df = pd.DataFrame(converted_list) 
                     df.columns = ['Observation id(s)', 'Conventional name']
-                    df.to_csv(r"portal_search_results.csv")
+                    df.to_csv(f"{obs_list_path}/portal_search_results.csv")
                     break
         elif (user_input_1 == '1'): 
             if (os.path.isfile(f'{working_path}/portal_search_results.csv') == False):
