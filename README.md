@@ -1,6 +1,6 @@
 # Swift Portal Downloader  
 ## Install Poetry  
-Documentation can be found here: [https://www.python-poetry.org](https://www.python-poetry.org)  
+Documentation about the poetry package can be found [here](https://www.python-poetry.org).  
 Install poetry with pip: 
 ```
     pip install poetry
@@ -15,6 +15,7 @@ In the repository's directory:
 ```
     poetry install
 ```
+This will install all the packages needed to compile and run the program.
 ## Running the Program  
 ```
     conda activate env_name_here
@@ -24,7 +25,7 @@ In the repository's directory:
 To run the program successfully, a file named **config.yaml** must be in the current directory.  
 It should contain the following elements:
 ```
-    download_path: directory to store downloaded images  
+    download_path: 'directory to store downloaded images'  
     dtype_list: list containing a combination of ['auxil', 'bat', 'xrt', 'uvot', 'log']  
 ```
 #### Config.yaml
