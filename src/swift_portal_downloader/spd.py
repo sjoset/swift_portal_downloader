@@ -206,8 +206,6 @@ def main():
 
                 elif (user_input_3 == '0'): # LEVEL 2: User selected mass search
                     search_terms = {"Comet", "P/", "C/"} 
-                    results = []
-                    print()
                     
                     tlist = mass_search(search_terms=search_terms, name_scheme_path=name_scheme_path)
                     
