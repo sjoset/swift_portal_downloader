@@ -17,6 +17,7 @@ import sys
 # spd.py
 
 # Diver program for the swift_portal_downloader
+# Manages all menus that the user can navigate
 
 # ==============================================================
 # ==============================================================
@@ -63,16 +64,19 @@ def main():
         return
     with open(f'{working_path}/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
+
         try:
             download_path = config['download_path']
             dtype_list = config['dtype_list'] 
         except (KeyError, TypeError):
             console.print("Unable to read [magenta][bold]config.yaml[/][/] file in current directory.", style="red")
             return
+
         try:
             obs_list_path = config['obs_list_path']
         except (KeyError, TypeError):
             obs_list_path = working_path
+
     file.close()
 
     # Test to see if download_path is actually a path
@@ -210,7 +214,7 @@ def main():
                     tlist = mass_search(search_terms=search_terms, name_scheme_path=name_scheme_path)
                     
                     # Dumping the finalized converted list to a pandas df -> csv to obs_list_path
-                    dump_dataframe(tlist=converted_list, output_path=obs_list_path, working_path=working_path)
+                    dump_dataframe(tlist=tlist, output_path=obs_list_path, working_path=working_path)
                     break
 
                 elif (user_input_3 == '1'): # LEVEL 2: User selected specific search term
@@ -254,11 +258,11 @@ def main():
                 continue
 
             # Converts results.csv -> pandas df -> list
-            df=pd.read_csv(f'{obs_list_path}/portal_search_results.csv')
-            df_list=df.values.tolist()
+            df = pd.read_csv(f'{obs_list_path}/portal_search_results.csv')
+            df_list = df.values.tolist()
 
             # Pulls out all obsids as a list['obsids']
-            tlist=[(ast.literal_eval(obsids), tname) for (i, obsids, tname) in df_list]
+            tlist = [(ast.literal_eval(obsids), tname) for (i, obsids, tname) in df_list]
             console.print(f'\nSucessfully loaded [magenta][bold]portal_search_results.csv[/][/] and found [cyan][bold]{len(tlist)}[/][/] [bright_white]target id(s).[/]')
 
             while (True): # Entering confirmation level

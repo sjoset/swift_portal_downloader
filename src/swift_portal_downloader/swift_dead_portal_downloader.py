@@ -6,6 +6,10 @@ import subprocess
 import os
 import shutil
 
+# swift_dead_portal_downloader.py
+
+# Program to manage the download of all results found in tlist
+
 # Function to generate the wget commands needed to download the script from the portal
 def get_swift_wget_commands(obsid: str, dtype: str, overwrite: bool) -> List[str]:
     
@@ -51,6 +55,7 @@ def swift_download_uncompressed(obsid: str, tname:str, dtype: str, dest_dir: pat
         
         # Delete the new empty dir
         shutil.rmtree(f'{dest_dir}/{obsid}/')
+
     else: # if there is not any data found for the given obsid in dest_dir
 
         # Move the dtype folder's parent to be the conventional_name

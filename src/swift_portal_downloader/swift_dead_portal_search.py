@@ -8,6 +8,10 @@ from rich.progress import track
 import requests
 import pathlib
 
+# swift_dead_portal_search.py
+
+# Program to manage the searching the swift portal and get the tlist formatted properly
+
 # Function to generate the page_html and search_soup for a given search_term
 # This is the only time we directly requests the portal's url without using wget
 def search_page(search_term: str) -> Tuple[str, str]:
@@ -66,6 +70,8 @@ def get_multi_tlists(search_soup: str) -> List[Tuple[str, str]]:
     all_targets_zip = zip(tids, tnames)
     return list(all_targets_zip)
 
+# Method to mass search all terms in search_terms and convert the tlist
+# All duplicates observations will be removed from the results
 def mass_search(search_terms: list, name_scheme_path: pathlib.Path) -> List[Tuple[str, str]]:
     
     console = Console()
@@ -77,13 +83,19 @@ def mass_search(search_terms: list, name_scheme_path: pathlib.Path) -> List[Tupl
         page_html, search_soup = search_page(search_term = term)
         tlist = get_multi_tlists(search_soup = search_soup)
         results.append(tlist)
-    full_results = results[0] + results[1] + results[2]
-    
+
+    # 'Flattens' results 
+    # ie: results = list[list[results_pass1], list[results_pass2], ...] -> full_results = list[results_pass1, results_pass2, ...]
+    full_results = [result for index in results for result in index]
+        
     # Remove all duplicate search results
     condensed_list = set(full_results) 
 
     return convert_list_multi(tlist=condensed_list, name_scheme_path=name_scheme_path)
 
+# Function to convert tlist to a converted_list
+# tlist=List[Tuple(tid, swift_comet_rename)] -> converted_list=List[Tuple(List[obsids], conventional_name)]
+# This conversion is only for len(tlist) >= 2
 def convert_list_multi(tlist: str, name_scheme_path: pathlib.Path) -> List[Tuple[str, str]]:
     
     console = Console()
@@ -107,6 +119,7 @@ def convert_tid_to_obsid(tid: str) -> List[str]:
     # many observations each target id has
     
     # Generate the wget command and run it
+    # Timeout set to none to ensure https request does not drop (issue for mass search)
     overwrite_option = '-nc'
     base_wget_url = f'https://www.swift.ac.uk/archive/download.sh?reproc=1&tid={tid}&source=obs&subdir=auxil'
     wget_response = requests.get(base_wget_url, timeout=None)
@@ -115,7 +128,7 @@ def convert_tid_to_obsid(tid: str) -> List[str]:
     wget_commands = [line for line in wget_response.text.splitlines() if 'wget' in line]
     urls = [command.split()[-1] for command in wget_commands]
     
-    # Iterates through each wget url created for all obsids
+    # Iterates through each wget url created
     obsids =[url[38:-7] for url in urls]
     
     return obsids

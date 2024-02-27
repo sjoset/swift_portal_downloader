@@ -5,6 +5,10 @@ import re
 import yaml
 import pathlib
 
+# swift_comet_rename.py
+
+# Program to manage the conversion of the swift name to the conventional name
+
 # Function to match comet_names that contain C/ or Comet#### formatting
 def match_long_period_name(comet_name: str) -> Optional[str]:
     """Searches comet_name for anything resembling a long-period comet naming convention"""
@@ -21,6 +25,7 @@ def match_long_period_name(comet_name: str) -> Optional[str]:
         long_period_match = re.search("Comet[0-9]{4}\\s?[A-Z]{1,2}[0-9]{1,2}", comet_name)
         if long_period_match:
             long_period_name = re.sub("Comet", "C/", long_period_match.group())
+
         else:
             long_period_name = None
 
@@ -34,12 +39,14 @@ def match_short_period_name(comet_name: str) -> Optional[str]:
     short_period_match = re.search("P/[0-9]{4}[A-Z]{1,2}[0-9]{1,3}", comet_name)
     if short_period_match:
         short_period_name = short_period_match.group() if short_period_match else None
+
     else:
 
         # Match naming convention of short period comets: [1 to 3 digits]P
         short_period_match = re.search("[0-9]{1,3}P", comet_name)
         if short_period_match:
             short_period_name = short_period_match.group()
+
         else:
             short_period_name = None
 
@@ -52,8 +59,10 @@ def manual_fix(comet_name: str, name_scheme_path: pathlib.Path) -> str:
     file.close()
     if comet_name in name_scheme: # Name found in current name_scheme (no overwrite needed)
         proper_name = name_scheme[f'{comet_name}']
+
     else: # Name not found in current name_scheme, addition and overwrite required
         return add_new_name(comet_name=comet_name, name_scheme=name_scheme, name_scheme_path=name_scheme_path)
+
     return proper_name
 
 # Function to add to and overwrite the current name_scheme
@@ -80,9 +89,11 @@ def rename_comet_name(comet_name: str, name_scheme_path: pathlib.Path) -> str:
     long_name=match_long_period_name(comet_name=comet_name)
     if (long_name != None):
         return long_name.replace('/', '_') 
+
     short_name=match_short_period_name(comet_name=comet_name)
     if (short_name != None):
         return short_name.replace('/', '_')
+
     else:
         name = manual_fix(comet_name=comet_name, name_scheme_path=name_scheme_path)
         return name.replace('/', '_')
