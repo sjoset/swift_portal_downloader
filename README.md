@@ -1,38 +1,36 @@
-# Swift Portal Downloader  
-## Install Poetry  
+# Swift Portal Downloader
+- A program to search and download data from the SWIFT dead portal ([www.swift.ac.uk/dead_portal/index.php](www.swift.ac.uk/dead_portal/index.php)).  
+
+## Installation
+
+Create a new conda environment:
+```
+    conda create --name swift_portal_downloader python=3.11
+    conda activate swift_portal_downloader
+```
+
+### Pip Installation
+```pip install swift_portal_downloader```
+
+### Development Installation
+#### Install Poetry  
 Documentation about the poetry package can be found [here](https://www.python-poetry.org).  
-Install poetry with pip: 
+
+#### Clone Repository
 ```
-    pip install poetry
+    git clone https://github.com/sjoset/swift_portal_downloader.git
 ```
-## Create Conda Environment with Python
-```
-    conda create --name env_name_here python=3.11
-    conda activate env_name_here
-```
-## Install Package Locally  
+
+#### Install Package Locally  
 In the repository's directory:
 ```
     poetry install
 ```
-This will install all the packages needed to compile and run the program.
-## Running the Program  
+
+## Usage
 ```
-    conda activate env_name_here
+    conda activate swift_portal_downloader
     spd_tui
 ```
-## Configuration File
-To run the program successfully, a file named **config.yaml** must be in the current directory.  
-It should contain the following elements:
-```    
-    download_path: 'directory to store downloaded images'  
-    dtype_list: list containing a combination of ['auxil', 'bat', 'xrt', 'uvot', 'log']  
-    obs_list_path: 'directory to store any generated observation lists'
-```
-*Note:* ***download_path*** *and* ***dtype_list*** *are required to be in your config file, but* ***obs_list_path*** *is optional (if no input is found, it will default to the current working directory)*  
-#### Config.yaml
-Here is an example of a config.yaml file:
-```
-    download_path: 'Users/user/downloads'
-    dtype_list: ['auxil', 'uvot', 'log']  
-```
+On first run, you will be prompted for some configuration options.
+For information on usage, there is help available from the main menu.

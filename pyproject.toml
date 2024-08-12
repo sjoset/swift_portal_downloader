@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "swift_portal_downloader"
-version = "0.0.2"
+version = "0.1.0"
 authors = [ "Jacob Duffy", "Shawn Oset" ]
 description = "Project to search and download swift comet images from the dead portal at https://www.swift.ac.uk/dead_portal"
 classifiers = ["Programming Language :: Python :: 3",]

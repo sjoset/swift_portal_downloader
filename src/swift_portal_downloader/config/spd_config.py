@@ -14,18 +14,21 @@ class SwiftPortalDownloaderConfig:
 
 
 def get_swift_portal_downloader_config_path() -> pathlib.Path:
-    return pathlib.Path("config.yaml")
+    return pathlib.Path("spd_config.yaml")
 
 
 def write_swift_portal_downloader_config(spdc: SwiftPortalDownloaderConfig) -> None:
 
     spdc_dict = asdict(spdc)
+    config_path = get_swift_portal_downloader_config_path()
+    # config_path.touch()
 
-    with get_swift_portal_downloader_config_path().open() as spdc_config_file:
+    with open(config_path, "w") as spdc_config_file:
         yaml.dump(spdc_dict, spdc_config_file)
 
 
 def read_swift_portal_downloader_config() -> SwiftPortalDownloaderConfig | None:
+    # TODO: add some validation here
 
     if not get_swift_portal_downloader_config_path().exists():
         return None

@@ -1,12 +1,11 @@
+import pathlib
+
 import pandas as pd
 import questionary
 from rich.columns import Columns
-from rich.console import Console, Group
+from rich.console import Console
 from rich.table import Table
-from rich.panel import Panel
 from rich.align import Align
-from rich.text import Text
-from rich import print
 
 from swift_portal_downloader.comet_db.comet_db import (
     comet_database_entries_to_dataframe,
@@ -24,53 +23,10 @@ from swift_portal_downloader.portal.download.uncompressed_download import (
 from swift_portal_downloader.swift.swift_downloadable_data_types import (
     SwiftDownloadableDataType,
 )
-
-
-# TODO: duplicated in search_comet_db_tui
-def make_db_info_panel(comet_db_df: pd.DataFrame):
-
-    num_comets = comet_db_df.canonical_name.nunique()
-    num_observations = comet_db_df.number_of_observations.sum()
-    num_targets = comet_db_df.target_id.nunique()
-
-    ptext = Text()
-    ptext.append("SWIFT Comet Database Summary", style="bold cyan")
-    ptext = Align.center(ptext)
-    p = Panel(ptext, highlight=True, expand=True, style="magenta")
-
-    t = Table(style="magenta")
-    t.add_column("[cyan]Number of comets")
-    t.add_column("[cyan]Number of target IDs")
-    t.add_column("[cyan]Total observations")
-    table_entry_color = "[medium_orchid3]"
-    t.add_row(
-        f"{table_entry_color}{num_comets}",
-        f"{table_entry_color}{num_targets}",
-        f"{table_entry_color}{num_observations}",
-    )
-
-    centered_table = Align.center(t)
-
-    return Group(p, centered_table)
-
-
-# TODO: duplicated in search_comet_db_tui
-def dataframe_to_rich_table(df: pd.DataFrame) -> Table:
-
-    t = Table(style="magenta", title=f"[light_sky_blue1]Available for download")
-    for col in df.columns:
-        t.add_column(f"[cyan]{col}")
-
-    table_entry_color = "[light_sky_blue1]"
-    for _, row in df.iterrows():
-        t.add_row(
-            f"{table_entry_color}{row.swift_target_name}",
-            f"{table_entry_color}{row.number_of_observations}",
-            f"{table_entry_color}{row.target_id:08d}",
-            f"{table_entry_color}{row.canonical_name}",
-        )
-
-    return t
+from swift_portal_downloader.tui.rich_display import (
+    dataframe_to_rich_table,
+    make_comet_db_info_text,
+)
 
 
 def count_downloaded_observations(
@@ -94,6 +50,7 @@ def count_downloaded_observations(
 
 def download_comet_tui(spdc: SwiftPortalDownloaderConfig) -> None:
 
+    # TODO: move to function
     q_custom_style = questionary.Style(
         [
             ("question", "fg:#dbafad"),
@@ -109,7 +66,7 @@ def download_comet_tui(spdc: SwiftPortalDownloaderConfig) -> None:
     # read in our comet db and show info
     comet_db_entries = read_comet_database()
     comet_db_df = comet_database_entries_to_dataframe(comet_db_entries=comet_db_entries)
-    print(make_db_info_panel(comet_db_df=comet_db_df))
+    c.print(make_comet_db_info_text(comet_db_df=comet_db_df))
 
     available_comets = list(set(comet_db_df.canonical_name))
     selected_comet = questionary.autocomplete(
@@ -124,8 +81,9 @@ def download_comet_tui(spdc: SwiftPortalDownloaderConfig) -> None:
 
     c.print(f"Results for [cyan]{selected_comet}:", justify="left")
     comet_df: pd.DataFrame = comet_db_df[comet_db_df.canonical_name == selected_comet].copy()  # type: ignore
-    comet_t = dataframe_to_rich_table(comet_df)
-    # comet_t_centered = Align.center(comet_t)
+    comet_t = dataframe_to_rich_table(
+        comet_df, table_title=f"[light_sky_blue1]Available for download"
+    )
     total_available_observations = comet_df.number_of_observations.sum()
 
     download_t = Table(
@@ -153,13 +111,16 @@ def download_comet_tui(spdc: SwiftPortalDownloaderConfig) -> None:
     )
     c.print()
 
+    c.print(
+        f"Using download directory {spdc.download_path / pathlib.Path(selected_comet)}"
+    )
     c.print("Will download data types:")
     for data_type in spdc.data_type_list:
         c.print(
             f"[light_sky_blue1]{data_type}[/]: {total_available_observations - num_observations_downloaded[data_type]}"
         )
 
-    do_download = questionary.confirm("Download data?", qmark="").ask()
+    do_download = questionary.confirm(f"Download data?", qmark="").ask()
 
     if not do_download:
         return

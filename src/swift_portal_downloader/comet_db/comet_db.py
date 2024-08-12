@@ -33,12 +33,7 @@ def dataframe_to_comet_database_entries(df: pd.DataFrame) -> list[CometDatabaseE
     return df.apply(lambda row: CometDatabaseEntry(**row), axis=1).to_list()
 
 
-# def construct_comet_db_path(download_path: pathlib.Path) -> pathlib.Path:
-#     return download_path / pathlib.Path("all_comets.csv")
-
-
 def write_comet_database(
-    # comet_db_entries: list[CometDatabaseEntry], download_path: pathlib.Path
     comet_db_entries: list[CometDatabaseEntry],
 ) -> None:
     """
@@ -46,22 +41,18 @@ def write_comet_database(
     download_path is taken from the config file, so that the comet db is stored one folder up from any data
     """
 
-    # output_path = construct_comet_db_path(download_path=download_path)
-
     df = comet_database_entries_to_dataframe(comet_db_entries=comet_db_entries)
     df.to_csv(get_comet_db_path(), index=False)
 
 
-# def read_comet_database(download_path: pathlib.Path) -> list[CometDatabaseEntry]:
 def read_comet_database() -> list[CometDatabaseEntry]:
     """
     Returns the contents of the comet database
     download_path is taken from the config file, so that the comet db is stored one folder up from any data
     """
-
-    # input_path = construct_comet_db_path(download_path=download_path)
-
-    # df = pd.read_csv(input_path)
-    df = pd.read_csv(get_comet_db_path())
+    comet_db_path = get_comet_db_path()
+    if not comet_db_path.exists():
+        return []
+    df = pd.read_csv(comet_db_path)
 
     return dataframe_to_comet_database_entries(df=df)
