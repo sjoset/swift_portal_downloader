@@ -5,14 +5,14 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "swift_portal_downloader"
 version = "0.0.2"
-authors = [ "Jacob Duffy" ]
-description = "Project to search and download swift comet images from the dead portal"
+authors = [ "Jacob Duffy", "Shawn Oset" ]
+description = "Project to search and download swift comet images from the dead portal at https://www.swift.ac.uk/dead_portal"
 classifiers = ["Programming Language :: Python :: 3",]
 readme = "README.md"
 license = "LICENSE"
 
 [tool.poetry.dependencies]
-python = ">=3.10, <3.13"
+python = ">=3.11, <3.13"
 numpy = "^1.26.4"
 rich = "^13.7.0"
 beautifulsoup4 = "^4.12.3"
@@ -20,8 +20,9 @@ requests = "^2.31.0"
 lxml = "^5.1.0"
 pyyaml = "^6.0.1"
 pandas = "^2.2.0"
+questionary = "^2.0.1"
 
 [tool.poetry.scripts]
-spd_tui = "swift_portal_downloader.spd:main" 
+spd_tui = "swift_portal_downloader.tui.spd_tui:main" 
 
 [tool.poetry.dev-dependencies]
