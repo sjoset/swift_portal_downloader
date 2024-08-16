@@ -14,7 +14,7 @@ Create a new conda environment:
 
 ### Development Installation
 #### Install Poetry  
-Documentation about the poetry package can be found [here](https://www.python-poetry.org).  
+Documentation about poetry can be found [here](https://www.python-poetry.org).  
 
 #### Clone Repository
 ```
