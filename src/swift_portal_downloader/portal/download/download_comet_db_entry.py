@@ -30,6 +30,12 @@ def download_comet_database_entry(
     observation_ids = swift_target_id_to_swift_observation_id(
         target_id=db_entry.target_id
     )
+    # c.print(f"For db entry {db_entry} found obsids {observation_ids} ...")
+    if len(observation_ids) == 0:
+        c.print(
+            f"No observation ids found associated with {db_entry} - perhaps it is still in quicklook? Skipping."
+        )
+        return
 
     # have we already done this?
     if all(
@@ -43,7 +49,7 @@ def download_comet_database_entry(
             for obsid in observation_ids
         ]
     ):
-        # c.print(f"[red]Skipping target id {db_entry.target_id}!")
+        c.print(f"[red]Skipping target id {db_entry.target_id}! Already downloaded.")
         return
 
     # show the observation ids we found associated with this target id

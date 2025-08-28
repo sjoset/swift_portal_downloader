@@ -33,6 +33,9 @@ def has_been_downloaded(
         observation_id=observation_id,
         data_type=data_type,
     )
+    # DEBUG
+    # print(f"Data path: {data_folder_path}")
+    # print(f"Exists: {data_folder_path.exists()}")
     return data_folder_path.exists()
 
 
@@ -84,7 +87,9 @@ def download_uncompressed(
         observation_id=observation_id,
         data_type=data_type,
     ):
-        # print("This data seems to exist - skipping.")
+        print(
+            f"Observation ID {observation_id} for type {data_type} seems to exist - skipping."
+        )
         return
 
     # find out how to get the data we want
@@ -98,7 +103,6 @@ def download_uncompressed(
     tmp_observation_path = tmp_path / pathlib.Path(observation_id)
     tmp_data_path = tmp_observation_path / pathlib.Path(data_type)
     os.chdir(tmp_path)
-    # print(f"Downloading into {tmp_path}...")
 
     # download
     presult = subprocess.run(wget_command.split())

@@ -33,6 +33,8 @@ def dataframe_to_comet_database_entries(df: pd.DataFrame) -> list[CometDatabaseE
     return df.apply(lambda row: CometDatabaseEntry(**row), axis=1).to_list()
 
 
+# TODO: the 'list downloaded from website date' should be stored somewhere to show on the menu,
+# or taken from the file modification time if reliable across OS
 def write_comet_database(
     comet_db_entries: list[CometDatabaseEntry],
 ) -> None:

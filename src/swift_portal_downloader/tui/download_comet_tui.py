@@ -34,6 +34,18 @@ def count_downloaded_observations(
     canonical_name: CanonicalCometName,
     data_type: SwiftDownloadableDataType,
 ) -> int:
+    """
+    Loop through the subdirectories for the given comet and:
+        Each subdirectory should be a unique observation id,
+        so if the folder obsid/'uvot' or obsid/'log', etc. exist, assume that
+        the data has been properly downloaded into it
+
+        If an individual image is deleted but the uvot/ folder is left intact,
+        this function will not detect that!
+
+        TODO: we could also construct the complete file path and check
+        for that as well, but this tool should
+    """
 
     data_path = construct_download_destination_path(
         base_dir=spdc.download_path, canonical_name=canonical_name
@@ -124,6 +136,8 @@ def download_comet_tui(spdc: SwiftPortalDownloaderConfig) -> None:
 
     if not do_download:
         return
+
+    # TODO: add some feedback at this step
 
     db_entries_to_download = dataframe_to_comet_database_entries(df=comet_df)
 

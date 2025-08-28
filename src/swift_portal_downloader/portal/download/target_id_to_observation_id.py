@@ -23,6 +23,9 @@ def swift_target_id_to_swift_observation_id(
     base_wget_url = f"https://www.swift.ac.uk/archive/download.sh?reproc=1&tid={target_id}&source=obs&subdir=auxil"
     wget_response = requests.get(base_wget_url, timeout=None)
 
+    # DEBUG
+    # print(f"Trying URL {base_wget_url} ...")
+
     # Get just a list of wget commands from the responses we got
     wget_commands = [line for line in wget_response.text.splitlines() if "wget" in line]
     urls = [command.split()[-1] for command in wget_commands]
