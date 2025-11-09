@@ -1,6 +1,6 @@
 import pathlib
 import yaml
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, replace
 
 from swift_portal_downloader.swift.swift_downloadable_data_types import (
     SwiftDownloadableDataType,
@@ -36,4 +36,10 @@ def read_swift_portal_downloader_config() -> SwiftPortalDownloaderConfig | None:
     with get_swift_portal_downloader_config_path().open() as spdc_config_file:
         spdc_dict = yaml.safe_load(spdc_config_file)
 
-    return SwiftPortalDownloaderConfig(**spdc_dict)
+    spdc_raw = SwiftPortalDownloaderConfig(**spdc_dict)
+    spdc = replace(
+        spdc_raw,
+        download_path=pathlib.Path(spdc_raw.download_path).expanduser().resolve(),
+    )
+
+    return spdc

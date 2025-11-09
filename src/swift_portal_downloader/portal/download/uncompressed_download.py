@@ -43,7 +43,7 @@ def construct_download_destination_path(
     base_dir: pathlib.Path, canonical_name: CanonicalCometName
 ) -> pathlib.Path:
     """
-    The directory we mave a completed download to: the data is moved under a folder with its canonical name for grouping by comet
+    The directory we move a completed download to: the data is moved under a folder with its canonical name for grouping by comet
     """
     return base_dir / pathlib.Path(canonical_name)
 
