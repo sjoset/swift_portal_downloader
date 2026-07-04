@@ -15,16 +15,23 @@ def swift_target_name_to_canonical_name(
     long_name = match_long_period_name(swift_target_name=swift_target_name)
     short_name = match_short_period_name(swift_target_name=swift_target_name)
 
-    # TODO: maybe check to make sure we don't find a long and short period name for the same swift_target_name
-    if long_name != None:
+    # check to see if it is in the manually renamed set
+    manual_name = manual_canonical_name_lookup(
+        # swift_target_name=swift_target_name, name_scheme_path=name_scheme_path
+        swift_target_name=swift_target_name
+    )
+
+    if manual_name is not None:
+        canonical_name = manual_name
+    elif long_name is not None:
         canonical_name = long_name
-    elif short_name != None:
+    elif short_name is not None:
         canonical_name = short_name
     else:
-        canonical_name = manual_canonical_name_lookup(
-            # swift_target_name=swift_target_name, name_scheme_path=name_scheme_path
-            swift_target_name=swift_target_name
+        print(
+            f"No canonical name found for {swift_target_name}! Update manual fix list!"
         )
+        canonical_name = "fixme"
 
     # Replace all canonical_names / with _ for when we format our download_dir
     return canonical_name.replace("/", "_")
