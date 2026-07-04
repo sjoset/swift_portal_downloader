@@ -49,11 +49,11 @@ def soup_to_comet_db_entries(search_soup: BeautifulSoup) -> list[CometDatabaseEn
 
     cdb_entries = [
         CometDatabaseEntry(
-            swift_target_name=swift_target_name,
-            number_of_observations=int(number_of_observations),
-            target_id=target_id,
+            swift_target_name=str(swift_target_name),
+            number_of_observations=int(str(number_of_observations)),
+            target_id=str(target_id),
             canonical_name=swift_target_name_to_canonical_name(
-                swift_target_name=swift_target_name
+                swift_target_name=str(swift_target_name)
             ),
         )
         for swift_target_name, number_of_observations, target_id in zip(
