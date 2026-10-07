@@ -47,7 +47,7 @@ def soup_to_comet_db_entries(search_soup: BeautifulSoup) -> list[CometDatabaseEn
         row.find("td", {"headers": "row_num"}).contents[0] for row in table_rows
     ]
 
-    cdb_entries = [
+    cdb_entries_unfiltered = [
         CometDatabaseEntry(
             swift_target_name=str(swift_target_name),
             number_of_observations=int(str(number_of_observations)),
@@ -60,6 +60,19 @@ def soup_to_comet_db_entries(search_soup: BeautifulSoup) -> list[CometDatabaseEn
             swift_target_names, num_observations, swift_target_ids
         )
     ]
+
+    # Filter out blacklisted target names like 4FGLJ2049.3+4440c/1LHAASOJ2047+4434 (target id 03000401) that get caught
+    #  in the comet regex but are not comets here.
+    # Instead of hard-coding this we should pull from a blacklist file internal to our package, but Swift
+    #  will not take data much longer so this may be the only non-comet observation that passes our comet regex
+    # We also check for this one entry in swift_target_name_to_canonical_name() to suppress messages about not being
+    #  able to resolve this into a canonical comet name.
+    cdb_entries = list(
+        filter(
+            lambda x: x.target_id != "03000401",
+            cdb_entries_unfiltered,
+        )
+    )
 
     return cdb_entries
 

@@ -28,9 +28,11 @@ def swift_target_name_to_canonical_name(
     elif short_name is not None:
         canonical_name = short_name
     else:
-        print(
-            f"No canonical name found for {swift_target_name}! Update manual fix list!"
-        )
+        # only complain if it is not the one known case that our regex catches a non-comet
+        if swift_target_name != "4FGLJ2049.3+4440c/1LHAASOJ2047+4434":
+            print(
+                f"No canonical name found for {swift_target_name}! Update manual fix list if this is a comet!"
+            )
         canonical_name = "fixme"
 
     # Replace all canonical_names / with _ for when we format our download_dir

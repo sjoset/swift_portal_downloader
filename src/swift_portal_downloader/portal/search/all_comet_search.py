@@ -1,6 +1,5 @@
 import itertools
 
-from rich.console import Console
 from rich.progress import track
 
 from swift_portal_downloader.comet_db.comet_db import CometDatabaseEntry
@@ -15,10 +14,6 @@ def search_portal_for_all_comets() -> list[CometDatabaseEntry]:
     """
 
     all_comet_search_terms = ["Comet", "P/", "C/"]
-
-    # console = Console()
-    # Console()
-    # print()
 
     # Collect all search results from search_terms
     results_list = []

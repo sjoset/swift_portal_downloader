@@ -11,6 +11,7 @@ from swift_portal_downloader.swift.swift_target_name import SwiftTargetName
 # We want to search the portal for broad terms that should cover all comets and save the results in a csv as a local cache
 @dataclass
 class CometDatabaseEntry:
+    # TODO: document these entries
     swift_target_name: SwiftTargetName
     number_of_observations: int
     target_id: SwiftTargetID
