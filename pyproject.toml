@@ -27,4 +27,5 @@ spd_tui = "swift_portal_downloader.tui.spd_tui:main"
 
 [tool.poetry.group.dev.dependencies]
 black = "^26.5.1"
-
+marimo = "^0.25.1"
+matplotlib = "^3.11.2"
